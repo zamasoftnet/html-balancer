@@ -1390,6 +1390,348 @@
 		</discardsOpen>
 	</tag>
 
+	<!-- VIDEO は HTMLCodes/HTMLStyle 側では既に対応済みだったが、本ファイル
+	     (タグ入れ子ルール)にエントリが無くUNKNOWN扱いのままだった
+	     (2026-07-18、SOURCE/TRACK追加時に発見・是正)。 -->
+	<tag name="VIDEO">
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsClose>$dl</discardsClose>
+	</tag>
+
+	<!-- HTML5 セクショニング/フローコンテンツ要素(2026-07-18 追加)。
+	     DIV と同じ挙動(暗黙のP閉じ含む)を割り当てる。 -->
+	<tag name="SECTION">
+		<openCloses>
+			$inline,ADDRESS,P
+		</openCloses>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<discardsClose>
+			$dl,MAP,MARQUEE,SPAN,UNKNOWN
+		</discardsClose>
+	</tag>
+
+	<tag name="ARTICLE">
+		<openCloses>
+			$inline,ADDRESS,P
+		</openCloses>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<discardsClose>
+			$dl,MAP,MARQUEE,SPAN,UNKNOWN
+		</discardsClose>
+	</tag>
+
+	<tag name="NAV">
+		<openCloses>
+			$inline,ADDRESS,P
+		</openCloses>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<discardsClose>
+			$dl,MAP,MARQUEE,SPAN,UNKNOWN
+		</discardsClose>
+	</tag>
+
+	<tag name="ASIDE">
+		<openCloses>
+			$inline,ADDRESS,P
+		</openCloses>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<discardsClose>
+			$dl,MAP,MARQUEE,SPAN,UNKNOWN
+		</discardsClose>
+	</tag>
+
+	<tag name="HEADER">
+		<openCloses>
+			$inline,ADDRESS,P
+		</openCloses>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<discardsClose>
+			$dl,MAP,MARQUEE,SPAN,UNKNOWN
+		</discardsClose>
+	</tag>
+
+	<tag name="FOOTER">
+		<openCloses>
+			$inline,ADDRESS,P
+		</openCloses>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<discardsClose>
+			$dl,MAP,MARQUEE,SPAN,UNKNOWN
+		</discardsClose>
+	</tag>
+
+	<tag name="MAIN">
+		<openCloses>
+			$inline,ADDRESS,P
+		</openCloses>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<discardsClose>
+			$dl,MAP,MARQUEE,SPAN,UNKNOWN
+		</discardsClose>
+	</tag>
+
+	<tag name="FIGURE">
+		<openCloses>
+			$inline,ADDRESS,P
+		</openCloses>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<discardsClose>
+			$dl,MAP,MARQUEE,SPAN,UNKNOWN
+		</discardsClose>
+	</tag>
+
+	<tag name="FIGCAPTION">
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsClose>$dl</discardsClose>
+	</tag>
+
+	<tag name="DETAILS">
+		<openCloses>
+			$inline,ADDRESS,P
+		</openCloses>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<discardsClose>
+			$dl,MAP,MARQUEE,SPAN,UNKNOWN
+		</discardsClose>
+	</tag>
+
+	<tag name="SUMMARY">
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsClose>$dl</discardsClose>
+	</tag>
+
+	<tag name="HGROUP">
+		<openCloses>
+			$inline,ADDRESS,P
+		</openCloses>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<discardsClose>
+			$dl,MAP,MARQUEE,SPAN,UNKNOWN
+		</discardsClose>
+	</tag>
+
+	<tag name="DIALOG">
+		<openCloses>
+			$inline,ADDRESS,P
+		</openCloses>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<discardsClose>
+			$dl,MAP,MARQUEE,SPAN,UNKNOWN
+		</discardsClose>
+	</tag>
+
+	<tag name="TEMPLATE">
+		<openCloses>
+			$inline,ADDRESS,P
+		</openCloses>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<discardsClose>
+			$dl,MAP,MARQUEE,SPAN,UNKNOWN
+		</discardsClose>
+	</tag>
+
+	<!-- HTML5 インライン要素(2026-07-18 追加)。SPAN と同じ挙動。 -->
+	<tag name="MARK">
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsClose>$dl</discardsClose>
+	</tag>
+
+	<tag name="TIME">
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsClose>$dl</discardsClose>
+	</tag>
+
+	<tag name="DATA">
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsClose>$dl</discardsClose>
+	</tag>
+
+	<tag name="OUTPUT">
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsClose>$dl</discardsClose>
+	</tag>
+
+	<tag name="PROGRESS">
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsClose>$dl</discardsClose>
+	</tag>
+
+	<tag name="METER">
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsClose>$dl</discardsClose>
+	</tag>
+
+	<tag name="BDI">
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsClose>$dl</discardsClose>
+	</tag>
+
+	<tag name="PICTURE">
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsClose>$dl</discardsClose>
+	</tag>
+
+	<tag name="AUDIO">
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsClose>$dl</discardsClose>
+	</tag>
+
+	<tag name="CANVAS">
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsClose>$dl</discardsClose>
+	</tag>
+
+	<tag name="DATALIST">
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsClose>$dl</discardsClose>
+	</tag>
+
+	<!-- HTML5 void(空)要素(2026-07-18 追加)。htmlunit-neko 自体は
+	     void と正しく認識しているが、本ファイル(タグ入れ子ルール)に
+	     エントリが無いと UNKNOWN 扱いになり自己終了しない
+	     (実クラッシュ調査で判明、docs/PLAN.md参照)。 -->
+	<tag name="SOURCE" flags="EMPTY">
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+	</tag>
+
+	<tag name="TRACK" flags="EMPTY">
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+	</tag>
+
 	<tag name="UNKNOWN">
 		<discardsOpen>
 			$ignore
