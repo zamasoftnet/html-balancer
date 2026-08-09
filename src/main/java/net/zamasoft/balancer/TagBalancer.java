@@ -411,12 +411,23 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 		}
 
 		// ヘッダを補完する
-		if (this.fSeenHeadElement) {
-			if (!this.fDocumentFragment && !prop.is(ElementProps.FLAG_HEAD)) {
-				final QName body = this.createQName("body");
-				this.startElement(body, null, null);
-			}
-		} else if (prop.is(ElementProps.FLAG_HEAD)) {
+		if (!this.fDocumentFragment && !this.fSeenBodyElement && !prop.is(ElementProps.FLAG_HEAD)
+				&& (this.fSeenHeadElement || prop.code != HTMLElements.UNKNOWN)) {
+			// 非head要素の開始は暗黙にbodyを開く(HTML Standardの
+			// "before head"/"in head"から"in body"への遷移)。
+			// head確定後は従来通り未知要素も含めて全てbodyへ追い出す
+			// (head内の独自タグを本文として描画する動作。1100-HEAD/unknownが保護)。
+			// head前に限り未知要素では発火させない: 壊れた未知ルート(<html">等)で
+			// bodyを開くと後続のstyle/link/titleがhead処理から漏れて
+			// スタイルが失われる(0120-flow/012-margin)。
+			// 従来はheadを見た文書でしか補完されず、bodyの無い断片では要素が
+			// html/bodyの外へ裸で流れ、後段の合成が開いた要素の内側へ
+			// html/head/bodyを注入して木全体が崩壊していた(e-Gov法令HTMLで
+			// 実測——スタイルの1要素ずれ・全祖先が閉じないことによる
+			// ストリーミング破れとOOM。2026-08-09)。
+			final QName body = this.createQName("body");
+			this.startElement(body, null, null);
+		} else if (!this.fSeenHeadElement && prop.is(ElementProps.FLAG_HEAD)) {
 			final QName head = this.createQName("head");
 			this.startElement(head, this.emptyAttributes(), null);
 		}
