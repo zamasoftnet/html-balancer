@@ -1390,6 +1390,33 @@
 		</discardsOpen>
 	</tag>
 
+	<!-- HTML5のvoid(空)要素とpicture(2026-08-20追加)。互換モード
+	     (DOCTYPE無し)でもエントリが無いとUNKNOWN扱いになり自己終了せず、
+	     source以降の内容が丸ごとdisplay:noneの子として飲み込まれる
+	     (srcset/picture対応の検証で実測——DOCTYPE付きはhtml4.xmlで
+	     2026-07-18に是正済みだったが、互換モード側が残っていた)。 -->
+	<tag name="SOURCE" flags="EMPTY">
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+	</tag>
+
+	<tag name="TRACK" flags="EMPTY">
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+	</tag>
+
+	<tag name="PICTURE">
+		<discardsOpen>
+			$ignore
+		</discardsOpen>
+		<stopCloseBy>
+			CAPTION,$cell
+		</stopCloseBy>
+		<discardsClose>$dl</discardsClose>
+	</tag>
+
 	<tag name="UNKNOWN">
 		<discardsOpen>
 			$ignore
