@@ -1,0 +1,71 @@
+{
+  "net.zamasoft.balancer.ElementProps": {
+    "ja": "要素のバランスのための情報です。\n\n@author MIYABE Tatsuhiko\n@version $Id: ElementProps.java 1552 2018-04-26 01:43:24Z miyabe $"
+  },
+  "net.zamasoft.balancer.ElementProps#FLAG_BODY": {
+    "ja": "文書の内容です。(BODY)"
+  },
+  "net.zamasoft.balancer.ElementProps#FLAG_CLOSE_BY_TEXT": {
+    "ja": "テキストにより閉じられます。"
+  },
+  "net.zamasoft.balancer.ElementProps#FLAG_EMPTY": {
+    "ja": "空タグです。 (BR, HR, COLなど)"
+  },
+  "net.zamasoft.balancer.ElementProps#FLAG_END_TO_EMPTY": {
+    "ja": "終了タグを空タグに変換します。 (BR, P)"
+  },
+  "net.zamasoft.balancer.ElementProps#FLAG_HEAD": {
+    "ja": "ヘッダの内容です。(LINK, META, LINKなど)"
+  },
+  "net.zamasoft.balancer.ElementProps#FLAG_IGNORE_TEXT": {
+    "ja": "直下のテキストを無視します。"
+  },
+  "net.zamasoft.balancer.ElementProps#SET_ALTERNATES": {
+    "ja": "代替要素です(TDに対するTHなど)。 この要素に対する、代替要素の閉じタグがあれば、この要素に入れ替えられます。"
+  },
+  "net.zamasoft.balancer.ElementProps#SET_CLOSE_CLOSES": {
+    "ja": "この要素の終了タグにより閉じられた場合に継続しない要素です。 タグの不一致がある場合、終了タグで親の要素は閉じて開かれますが、この要素は再開しません。"
+  },
+  "net.zamasoft.balancer.ElementProps#SET_DIGS_FOR": {
+    "ja": "指定の要素が見つかるまで先祖を掘り下げます。 要素がない場合は掘り下げません。"
+  },
+  "net.zamasoft.balancer.ElementProps#SET_DISCARDS_CLOSE": {
+    "ja": "この要素の直下で終了タグを無視する要素です。"
+  },
+  "net.zamasoft.balancer.ElementProps#SET_DISCARDS_OPEN": {
+    "ja": "この要素の直下で開始タグを無視する要素です。"
+  },
+  "net.zamasoft.balancer.ElementProps#SET_INSERT_BY_TEXT": {
+    "ja": "テキストにより挿入する要素です。"
+  },
+  "net.zamasoft.balancer.ElementProps#SET_INSERT_PARENTS": {
+    "ja": "この要素の親に自動的に挿入される要素です(TDに対するTRなど)。 親が指定の要素であれば挿入されません。"
+  },
+  "net.zamasoft.balancer.ElementProps#SET_OPEN_CLOSES": {
+    "ja": "この要素の開始タグにより閉じる先祖要素です。 指定の要素まで掘り下げられます。"
+  },
+  "net.zamasoft.balancer.ElementProps#SET_OPEN_SPLITS": {
+    "ja": "この要素の開始タグにより閉じて直後で開く親要素です。"
+  },
+  "net.zamasoft.balancer.ElementProps#SET_STOP_CLOSE_BY": {
+    "ja": "SET_OPEN_CLOSESによる掘り下げを停止する先祖要素です。"
+  },
+  "net.zamasoft.balancer.ElementProps.ElementProp#code": {
+    "ja": "要素のコードです。"
+  },
+  "net.zamasoft.balancer.ElementProps.ElementProp#flags": {
+    "ja": "フラグです。"
+  },
+  "net.zamasoft.balancer.SAXParser": {
+    "ja": "独自のタグバランサを利用するSAXParserです。\n\n@author MIYABE Tatsuhiko\n@version $Id: SAXParser.java 1552 2018-04-26 01:43:24Z miyabe $"
+  },
+  "net.zamasoft.balancer.XNIRecorder": {
+    "ja": "SAXEventインスタンスをイベントごとに生成します。\n\n@author MIYABE Tatsuhiko\n@version $Id: XNIRecorder.java 1552 2018-04-26 01:43:24Z miyabe $"
+  },
+  "net.zamasoft.balancer.XNIRecorder.XNIEvent": {
+    "ja": "SAXイベントを保持し、再現します。\n\n@author MIYABE Tatsuhiko\n@version $Id: XNIRecorder.java 1552 2018-04-26 01:43:24Z miyabe $"
+  },
+  "net.zamasoft.balancer.XNIRecorder.XNIEvent#doEvent(XMLDocumentHandler)": {
+    "ja": "イベントを実行します。\n\n@param handler"
+  }
+}
