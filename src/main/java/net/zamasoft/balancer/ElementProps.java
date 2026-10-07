@@ -15,7 +15,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * 要素のバランスのための情報です。
+ * Information for balancing elements.
  * 
  * @author MIYABE Tatsuhiko
  * @version $Id: ElementProps.java 1552 2018-04-26 01:43:24Z miyabe $
@@ -35,93 +35,96 @@ public class ElementProps {
 	}
 
 	/**
-	 * 文書の内容です。(BODY)
+	 * Document content (BODY).
 	 */
 	public static final int FLAG_BODY = 0x00000001;
 
 	/**
-	 * ヘッダの内容です。(LINK, META, LINKなど)
+	 * Head content (LINK, META, LINK, etc.).
 	 */
 	public static final int FLAG_HEAD = 0x00000002;
 
 	/**
-	 * 空タグです。 (BR, HR, COLなど)
+	 * An empty tag (BR, HR, COL, etc.).
 	 */
 	public static final int FLAG_EMPTY = 0x00000004;
 
 	/**
-	 * 終了タグを空タグに変換します。 (BR, P)
+	 * Converts an end tag to an empty tag (BR, P).
 	 */
 	public static final int FLAG_END_TO_EMPTY = 0x00000008;
 
 	/**
-	 * 直下のテキストを無視します。
+	 * Ignores text directly inside this element.
 	 */
 	public static final int FLAG_IGNORE_TEXT = 0x00000010;
 
 	/**
-	 * テキストにより閉じられます。
+	 * Closes when text occurs.
 	 */
 	public static final int FLAG_CLOSE_BY_TEXT = 0x00000020;
 
 	/**
-	 * 代替要素です(TDに対するTHなど)。 この要素に対する、代替要素の閉じタグがあれば、この要素に入れ替えられます。
+	 * Alternative elements (such as TH for TD). An end tag for an alternative to this element is replaced
+	 * with an end tag for this element.
 	 */
 	public static final int SET_ALTERNATES = 0;
 
 	/**
-	 * 指定の要素が見つかるまで先祖を掘り下げます。 要素がない場合は掘り下げません。
+	 * Unwinds the ancestor stack until the specified element is found. Does not unwind if the element is absent.
 	 */
 	public static final int SET_DIGS_FOR = 1;
 
 	/**
-	 * この要素の親に自動的に挿入される要素です(TDに対するTRなど)。 親が指定の要素であれば挿入されません。
+	 * Elements automatically inserted as parents of this element (such as TR for TD).
+	 * No element is inserted if the parent is one of the specified elements.
 	 */
 	public static final int SET_INSERT_PARENTS = 2;
 
 	/**
-	 * この要素の開始タグにより閉じる先祖要素です。 指定の要素まで掘り下げられます。
+	 * Ancestor elements that this element's start tag closes. The ancestor stack is unwound to the specified element.
 	 */
 	public static final int SET_OPEN_CLOSES = 3;
 
 	/**
-	 * この要素の終了タグにより閉じられた場合に継続しない要素です。 タグの不一致がある場合、終了タグで親の要素は閉じて開かれますが、この要素は再開しません。
+	 * Elements that do not resume when this element's end tag closes them. When tags do not match, the end tag
+	 * closes and reopens parent elements, but these elements do not reopen.
 	 */
 	public static final int SET_CLOSE_CLOSES = 4;
 
 	/**
-	 * この要素の直下で開始タグを無視する要素です。
+	 * Elements whose start tags are ignored directly inside this element.
 	 */
 	public static final int SET_DISCARDS_OPEN = 5;
 
 	/**
-	 * この要素の直下で終了タグを無視する要素です。
+	 * Elements whose end tags are ignored directly inside this element.
 	 */
 	public static final int SET_DISCARDS_CLOSE = 6;
 
 	/**
-	 * この要素の開始タグにより閉じて直後で開く親要素です。
+	 * Parent elements that close at this element's start tag and reopen immediately after it.
 	 */
 	public static final int SET_OPEN_SPLITS = 7;
 
 	/**
-	 * SET_OPEN_CLOSESによる掘り下げを停止する先祖要素です。
+	 * Ancestor elements that stop the unwinding performed by SET_OPEN_CLOSES.
 	 */
 	public static final int SET_STOP_CLOSE_BY = 8;
 
 	/**
-	 * テキストにより挿入する要素です。
+	 * Elements to insert when text occurs.
 	 */
 	public static final int SET_INSERT_BY_TEXT = 9;
 
 	public static class ElementProp {
 		/**
-		 * 要素のコードです。
+		 * The element code.
 		 */
 		public final short code;
 
 		/**
-		 * フラグです。
+		 * Flags.
 		 */
 		public final int flags;
 
@@ -238,18 +241,18 @@ public class ElementProps {
 						continue;
 					}
 					if (str.startsWith("-")) {
-						// 除外
+						// Exclude
 						str = str.substring(1);
 						list.remove(str);
 					} else if (str.startsWith("$")) {
-						// タグセット
+						// Tag set
 						str = str.substring(1);
 						List<String> tagset = this.tagsets.get(str);
 						if (tagset != null) {
 							list.addAll(tagset);
 						}
 					} else {
-						// タグ
+						// Tag
 						list.add(str);
 					}
 				}

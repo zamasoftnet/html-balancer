@@ -1,7 +1,7 @@
 package net.zamasoft.balancer;
 
 /**
- * 要素コードのスタックです。
+ * A stack of element codes.
  * 
  * @author MIYABE Tatsuhiko
  * @version $Id: CodeStack.java 1552 2018-04-26 01:43:24Z miyabe $

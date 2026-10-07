@@ -11,21 +11,21 @@ import org.htmlunit.cyberneko.xerces.xni.XMLDocumentHandler;
 import org.htmlunit.cyberneko.xerces.xni.XMLString;
 
 /**
- * SAXEventインスタンスをイベントごとに生成します。
+ * Creates a SAXEvent instance for each event.
  * 
  * @author MIYABE Tatsuhiko
  * @version $Id: XNIRecorder.java 1552 2018-04-26 01:43:24Z miyabe $
  */
 public class XNIRecorder {
 	/**
-	 * SAXイベントを保持し、再現します。
+	 * Stores and replays SAX events.
 	 * 
 	 * @author MIYABE Tatsuhiko
 	 * @version $Id: XNIRecorder.java 1552 2018-04-26 01:43:24Z miyabe $
 	 */
 	protected static interface XNIEvent {
 		/**
-		 * イベントを実行します。
+		 * Executes the event.
 		 * 
 		 * @param handler
 		 */

@@ -9,7 +9,7 @@ import org.htmlunit.cyberneko.xerces.xni.parser.XMLDocumentSource;
 import org.htmlunit.cyberneko.xerces.xni.parser.XMLConfigurationException;
 
 /**
- * 独自のタグバランサを利用するSAXParserです。
+ * A SAXParser that uses a custom tag balancer.
  * 
  * @author MIYABE Tatsuhiko
  * @version $Id: SAXParser.java 1552 2018-04-26 01:43:24Z miyabe $

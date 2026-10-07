@@ -381,7 +381,7 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 		}
 
 		if (prop.is(ElementProps.FLAG_BODY)) {
-			// bodyの開始
+			// Start body
 			if (this.fSeenBodyElement) {
 				return;
 			}
@@ -410,21 +410,21 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 			return;
 		}
 
-		// ヘッダを補完する
+		// Supply the missing head
 		if (!this.fDocumentFragment && !this.fSeenBodyElement && !prop.is(ElementProps.FLAG_HEAD)
 				&& (this.fSeenHeadElement || prop.code != HTMLElements.UNKNOWN)) {
-			// 非head要素の開始は暗黙にbodyを開く(HTML Standardの
-			// "before head"/"in head"から"in body"への遷移)。
-			// head確定後は従来通り未知要素も含めて全てbodyへ追い出す
-			// (head内の独自タグを本文として描画する動作。1100-HEAD/unknownが保護)。
-			// head前に限り未知要素では発火させない: 壊れた未知ルート(<html">等)で
-			// bodyを開くと後続のstyle/link/titleがhead処理から漏れて
-			// スタイルが失われる(0120-flow/012-margin)。
-			// 従来はheadを見た文書でしか補完されず、bodyの無い断片では要素が
-			// html/bodyの外へ裸で流れ、後段の合成が開いた要素の内側へ
-			// html/head/bodyを注入して木全体が崩壊していた(e-Gov法令HTMLで
-			// 実測——スタイルの1要素ずれ・全祖先が閉じないことによる
-			// ストリーミング破れとOOM。2026-08-09)。
+			// Starting a non-head element implicitly opens body (the HTML Standard transition
+			// from "before head"/"in head" to "in body").
+			// Once head is established, move all elements, including unknown ones, into body as before
+			// (renders custom tags in head as body text; covered by 1100-HEAD/unknown).
+			// Only before head, do not trigger this for unknown elements: opening body for a malformed
+			// unknown root (such as <html">) causes subsequent style/link/title elements to bypass head
+			// processing and lose styles (0120-flow/012-margin).
+			// Previously, this completion only applied to documents where head had been seen. In fragments
+			// without body, elements flowed unwrapped outside html/body, and downstream synthesis injected
+			// html/head/body inside open elements, corrupting the entire tree (observed in e-Gov legislation
+			// HTML: styles shifted by one element; all ancestors remained open, breaking streaming
+			// and causing OOM. 2026-08-09).
 			final QName body = this.createQName("body");
 			this.startElement(body, null, null);
 		} else if (!this.fSeenHeadElement && prop.is(ElementProps.FLAG_HEAD)) {
@@ -432,7 +432,7 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 			this.startElement(head, this.emptyAttributes(), null);
 		}
 
-		// 親要素のチェック
+		// Check the parent element
 		if (this.fElementStack.top >= 1) {
 			{
 				Info parent = this.fElementStack.peek();
@@ -443,13 +443,13 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 			}
 
 			if (prop.contains(ElementProps.SET_DIGS_FOR)) {
-				// 必要な親が存在するまで掘り下げる
+				// Unwind the ancestor stack until the required parent is reached
 				int close = 0;
 				for (int i = this.fElementStack.top - 1; i >= 0; --i) {
 					final Info info = this.fElementStack.data[i];
 					if (info.prop.code == HTMLElements.HTML || info.prop.code == HTMLElements.HEAD) {
-						// HTMLタグはDocumentEndまで終わらせない
-						// HEADタグは内容の開始まで終わらせない
+						// Do not close the HTML tag until DocumentEnd
+						// Do not close the HEAD tag until content starts
 						break;
 					}
 					if (prop.contains(ElementProps.SET_DIGS_FOR, info.prop.code)) {
@@ -464,13 +464,13 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 			}
 
 			if (prop.contains(ElementProps.SET_OPEN_CLOSES)) {
-				// 指定した親を閉じる
+				// Close the specified parent
 				int close = 0;
 				for (int i = this.fElementStack.top - 1; i >= 0; --i) {
 					final Info info = this.fElementStack.data[i];
 					if (info.prop.code == HTMLElements.HTML || info.prop.code == HTMLElements.HEAD) {
-						// HTMLタグはDocumentEndまで終わらせない
-						// HEADタグは内容の開始まで終わらせない
+						// Do not close the HTML tag until DocumentEnd
+						// Do not close the HEAD tag until content starts
 						break;
 					}
 					if (prop.contains(ElementProps.SET_OPEN_CLOSES, info.prop.code)) {
@@ -478,12 +478,12 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 					}
 					if (prop.contains(ElementProps.SET_STOP_CLOSE_BY)
 							&& prop.contains(ElementProps.SET_STOP_CLOSE_BY, info.prop.code)) {
-						// 探索中止
+						// Stop searching
 						break;
 					}
 					if (prop.contains(ElementProps.SET_DIGS_FOR)
 							&& prop.contains(ElementProps.SET_DIGS_FOR, info.prop.code)) {
-						// 探索中止
+						// Stop searching
 						break;
 					}
 				}
@@ -496,7 +496,7 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 		if (this.fElementStack.top >= 1) {
 			{
 				Info parent = this.fElementStack.peek();
-				// 親要素の直下の開始タグを無視
+				// Ignore the start tag directly inside the parent element
 				if (parent.prop.contains(ElementProps.SET_DISCARDS_OPEN)
 						&& parent.prop.contains(ElementProps.SET_DISCARDS_OPEN, prop.code)) {
 					return;
@@ -505,7 +505,7 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 
 			{
 				final Info parent = this.fElementStack.peek();
-				// 必要な親を補完する
+				// Insert the required parent
 				if (prop.contains(ElementProps.SET_INSERT_PARENTS)) {
 					if (!prop.contains(ElementProps.SET_INSERT_PARENTS, parent.prop.code)) {
 						String parentName = ElementProps.getHTMLElementName(prop.tags[ElementProps.SET_INSERT_PARENTS][0]);
@@ -516,7 +516,7 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 			}
 		}
 
-		// 閉じて開く
+		// Close and reopen
 		List<Info> continueTags = null;
 		if (prop.contains(ElementProps.SET_OPEN_SPLITS)) {
 			while (this.fElementStack.top >= 1) {
@@ -610,10 +610,10 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 		}
 		this.fSeenAnything = true;
 
-		// 親要素をチェック
+		// Check the parent element
 		if (this.fElementStack.top >= 1) {
 			Info parent = this.fElementStack.peek();
-			// 必要な親を補完する
+			// Insert the required parent
 			if (parent.prop.contains(ElementProps.SET_INSERT_BY_TEXT)) {
 				if (!isWhitespace(text)) {
 					final String parentName = ElementProps
@@ -662,13 +662,13 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 		ElementProp prop = this.getElementProp(element);
 
 		if (prop.code == HTMLElements.HTML || prop.code == HTMLElements.HEAD) {
-			// HTMLタグはDocumentEndまで終わらせない
-			// HEADタグは内容の開始まで終わらせない
+			// Do not close the HTML tag until DocumentEnd
+			// Do not close the HEAD tag until content starts
 			return;
 		}
 
 		if (!this.fSeenBodyElement && this.fElementStack.top > 0) {
-			// ルート要素の中でBODYの外の処理
+			// Handle content inside the root element but outside BODY
 			Info parent = this.fElementStack.peek();
 			if (this.inHead() || (parent.prop.is(ElementProps.FLAG_HEAD) && !parent.prop.is(ElementProps.FLAG_EMPTY))) {
 				boolean match = false;
@@ -696,23 +696,23 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 			}
 		}
 
-		// 対応する開始タグを調べる
+		// Find the matching start tag
 		int close = 0;
 		for (int i = this.fElementStack.top - 1; i >= 0; i--) {
 			final Info info = this.fElementStack.data[i];
 			if (info.prop.code == HTMLElements.HTML || info.prop.code == HTMLElements.HEAD) {
-				// HTMLタグはDocumentEndまで終わらせない
-				// HEADタグは内容の開始まで終わらせない
+				// Do not close the HTML tag until DocumentEnd
+				// Do not close the HEAD tag until content starts
 				break;
 			}
 			if (info.prop.code == prop.code) {
-				// 同じタグ
+				// Same tag
 				close = this.fElementStack.top - i;
 				break;
 			}
 			if (prop.contains(ElementProps.SET_ALTERNATES)
 					&& prop.contains(ElementProps.SET_ALTERNATES, info.prop.code)) {
-				// 代替可能タグ
+				// Alternative tag
 				close = this.fElementStack.top - i;
 				prop = info.prop;
 				element = info.qname;
@@ -720,24 +720,24 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 			}
 			if (prop.contains(ElementProps.SET_CLOSE_CLOSES)
 					&& prop.contains(ElementProps.SET_CLOSE_CLOSES, info.prop.code)) {
-				// 親タグを閉じる
+				// Close the parent tag
 				continue;
 			}
 			if (prop.contains(ElementProps.SET_STOP_CLOSE_BY)
 					&& prop.contains(ElementProps.SET_STOP_CLOSE_BY, info.prop.code)) {
-				// 探索中止
+				// Stop searching
 				break;
 			}
 			if (prop.contains(ElementProps.SET_DIGS_FOR) && prop.contains(ElementProps.SET_DIGS_FOR, info.prop.code)) {
-				// 探索中止
+				// Stop searching
 				break;
 			}
 		}
 
-		// 対応する開始タグがない場合
+		// If there is no matching start tag
 		if (close == 0) {
 			if (prop.is(ElementProps.FLAG_END_TO_EMPTY)) {
-				// 終了タグを空タグに置換する
+				// Replace the end tag with an empty tag
 				this.startElement(element, null, null);
 				if (!prop.is(ElementProps.FLAG_EMPTY)) {
 					this.endElement(element, augs);
@@ -746,7 +746,7 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 			return;
 		}
 
-		// 終了タグを無視する
+		// Ignore the end tag
 		Info parent = this.fElementStack.peek();
 		if (parent.prop.code != prop.code) {
 			if (parent.prop.contains(ElementProps.SET_DISCARDS_CLOSE)
@@ -755,7 +755,7 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 			}
 		}
 
-		// タグの終了
+		// Close tags
 		List<Info> continueTags = null;
 		for (int i = 0; i < close; i++) {
 			final Info info = this.fElementStack.pop();
@@ -763,7 +763,7 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 			if (i == close - 1) {
 				break;
 			}
-			// 親タグを閉じる
+			// Close the parent tag
 			if (prop.contains(ElementProps.SET_CLOSE_CLOSES)
 					&& prop.contains(ElementProps.SET_CLOSE_CLOSES, parent.prop.code)) {
 				continue;
