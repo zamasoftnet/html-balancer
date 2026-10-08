@@ -756,6 +756,7 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 		}
 
 		// Close tags
+		final boolean formattingEnd = isFormattingElement(prop.code);
 		List<Info> continueTags = null;
 		for (int i = 0; i < close; i++) {
 			final Info info = this.fElementStack.pop();
@@ -763,9 +764,22 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 			if (i == close - 1) {
 				break;
 			}
-			// Close the parent tag
-			if (prop.contains(ElementProps.SET_CLOSE_CLOSES)
-					&& prop.contains(ElementProps.SET_CLOSE_CLOSES, parent.prop.code)) {
+			if (formattingEnd) {
+				// The end tag of a formatting element (b, a, font ...): blocks opened inside it go on after it,
+				// as the adoption agency algorithm keeps them (reopen everything, as before).
+				// Close the parent tag
+				if (prop.contains(ElementProps.SET_CLOSE_CLOSES)
+						&& prop.contains(ElementProps.SET_CLOSE_CLOSES, parent.prop.code)) {
+					continue;
+				}
+			} else if (!reopensFormattingAfter(prop.code) || !isFormattingElement(info.prop.code)) {
+				// Any other end tag (div, ul, p, li, span ...) pops the elements above its start tag for good
+				// (HTML Standard, "in body": "pop elements from the stack of open elements until" the matching
+				// element). Only formatting elements come back, the way "reconstruct the active formatting
+				// elements" restores them before the next content; table cells, captions, tables, applets,
+				// marquees and objects are markers that end that list. Until 2026-10-09 every element was reopened,
+				// so after "<div><ul class=x><li>a</div><p>b" the paragraph went into a new ul.x/li (and vanished
+				// with a "display: none" on .x, the wordpress.org table of contents).
 				continue;
 			}
 			if (continueTags == null) {
@@ -891,6 +905,52 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 		final XMLDocumentHandler handler = this.fDocumentHandler.getDocumentHandler();
 		handler.endElement(info.qname, augs);
 		return;
+	}
+
+	/**
+	 * Formatting elements of the HTML Standard ("a", "b", "big", "code", "em", "font", "i", "nobr", "s", "small",
+	 * "strike", "strong", "tt", "u"): the elements the list of active formatting elements carries over block
+	 * boundaries.
+	 */
+	protected static boolean isFormattingElement(final short code) {
+		switch (code) {
+		case HTMLElements.A:
+		case HTMLElements.B:
+		case HTMLElements.BIG:
+		case HTMLElements.CODE:
+		case HTMLElements.EM:
+		case HTMLElements.FONT:
+		case HTMLElements.I:
+		case HTMLElements.NOBR:
+		case HTMLElements.S:
+		case HTMLElements.SMALL:
+		case HTMLElements.STRIKE:
+		case HTMLElements.STRONG:
+		case HTMLElements.TT:
+		case HTMLElements.U:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	/**
+	 * False for the end tags that clear the list of active formatting elements up to the last marker (td, th,
+	 * caption, table, applet, marquee, object): formatting elements opened inside them do not come back after them.
+	 */
+	protected static boolean reopensFormattingAfter(final short code) {
+		switch (code) {
+		case HTMLElements.TD:
+		case HTMLElements.TH:
+		case HTMLElements.CAPTION:
+		case HTMLElements.TABLE:
+		case HTMLElements.APPLET:
+		case HTMLElements.MARQUEE:
+		case HTMLElements.OBJECT:
+			return false;
+		default:
+			return true;
+		}
 	}
 
 	/** Returns a set of empty attributes. */

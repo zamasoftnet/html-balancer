@@ -433,6 +433,82 @@
 		</discardsClose>
 	</tag>
 
+	<!-- HTML5 block elements (2026-10-09). Their start tags close an open p, as the HTML Standard's "in body"
+	     insertion mode does ("If the stack of open elements has a p element in button scope, close a p element");
+	     without these entries <p>a<section>b</section> left the section inside the p. -->
+	<tag name="ARTICLE">
+		<openCloses>P</openCloses>
+		<stopCloseBy>CAPTION,$cell,BUTTON</stopCloseBy>
+		<discardsOpen>$ignore</discardsOpen>
+		<discardsClose>$dl,MAP,MARQUEE,SPAN,UNKNOWN</discardsClose>
+	</tag>
+	<tag name="ASIDE">
+		<openCloses>P</openCloses>
+		<stopCloseBy>CAPTION,$cell,BUTTON</stopCloseBy>
+		<discardsOpen>$ignore</discardsOpen>
+		<discardsClose>$dl,MAP,MARQUEE,SPAN,UNKNOWN</discardsClose>
+	</tag>
+	<tag name="DETAILS">
+		<openCloses>P</openCloses>
+		<stopCloseBy>CAPTION,$cell,BUTTON</stopCloseBy>
+		<discardsOpen>$ignore</discardsOpen>
+		<discardsClose>$dl,MAP,MARQUEE,SPAN,UNKNOWN</discardsClose>
+	</tag>
+	<tag name="DIALOG">
+		<openCloses>P</openCloses>
+		<stopCloseBy>CAPTION,$cell,BUTTON</stopCloseBy>
+		<discardsOpen>$ignore</discardsOpen>
+		<discardsClose>$dl,MAP,MARQUEE,SPAN,UNKNOWN</discardsClose>
+	</tag>
+	<tag name="FIGCAPTION">
+		<openCloses>P</openCloses>
+		<stopCloseBy>CAPTION,$cell,BUTTON</stopCloseBy>
+		<discardsOpen>$ignore</discardsOpen>
+		<discardsClose>$dl,MAP,MARQUEE,SPAN,UNKNOWN</discardsClose>
+	</tag>
+	<tag name="FIGURE">
+		<openCloses>P</openCloses>
+		<stopCloseBy>CAPTION,$cell,BUTTON</stopCloseBy>
+		<discardsOpen>$ignore</discardsOpen>
+		<discardsClose>$dl,MAP,MARQUEE,SPAN,UNKNOWN</discardsClose>
+	</tag>
+	<tag name="FOOTER">
+		<openCloses>P</openCloses>
+		<stopCloseBy>CAPTION,$cell,BUTTON</stopCloseBy>
+		<discardsOpen>$ignore</discardsOpen>
+		<discardsClose>$dl,MAP,MARQUEE,SPAN,UNKNOWN</discardsClose>
+	</tag>
+	<tag name="HEADER">
+		<openCloses>P</openCloses>
+		<stopCloseBy>CAPTION,$cell,BUTTON</stopCloseBy>
+		<discardsOpen>$ignore</discardsOpen>
+		<discardsClose>$dl,MAP,MARQUEE,SPAN,UNKNOWN</discardsClose>
+	</tag>
+	<tag name="MAIN">
+		<openCloses>P</openCloses>
+		<stopCloseBy>CAPTION,$cell,BUTTON</stopCloseBy>
+		<discardsOpen>$ignore</discardsOpen>
+		<discardsClose>$dl,MAP,MARQUEE,SPAN,UNKNOWN</discardsClose>
+	</tag>
+	<tag name="NAV">
+		<openCloses>P</openCloses>
+		<stopCloseBy>CAPTION,$cell,BUTTON</stopCloseBy>
+		<discardsOpen>$ignore</discardsOpen>
+		<discardsClose>$dl,MAP,MARQUEE,SPAN,UNKNOWN</discardsClose>
+	</tag>
+	<tag name="SECTION">
+		<openCloses>P</openCloses>
+		<stopCloseBy>CAPTION,$cell,BUTTON</stopCloseBy>
+		<discardsOpen>$ignore</discardsOpen>
+		<discardsClose>$dl,MAP,MARQUEE,SPAN,UNKNOWN</discardsClose>
+	</tag>
+	<tag name="SUMMARY">
+		<openCloses>P</openCloses>
+		<stopCloseBy>CAPTION,$cell,BUTTON</stopCloseBy>
+		<discardsOpen>$ignore</discardsOpen>
+		<discardsClose>$dl,MAP,MARQUEE,SPAN,UNKNOWN</discardsClose>
+	</tag>
+
 	<tag name="DD">
 		<alternates>DT</alternates>
 		<openCloses>

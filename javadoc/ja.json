@@ -309,6 +309,11 @@
     "en": "Ignorable whitespace.",
     "ja": "無視できる空白。"
   },
+  "net.zamasoft.balancer.TagBalancer#isFormattingElement(short)": {
+    "hash": "f0b70fd0ddad4d9f",
+    "en": "Formatting elements of the HTML Standard (\"a\", \"b\", \"big\", \"code\", \"em\", \"font\", \"i\", \"nobr\", \"s\", \"small\",\n\"strike\", \"strong\", \"tt\", \"u\"): the elements the list of active formatting elements carries over block\nboundaries.",
+    "ja": "HTML Standard の書式要素(\"a\"、\"b\"、\"big\"、\"code\"、\"em\"、\"font\"、\"i\"、\"nobr\"、\"s\"、\"small\"、\n\"strike\"、\"strong\"、\"tt\"、\"u\")。活性な書式要素の一覧がブロックの境界を越えて持ち越す要素です。"
+  },
   "net.zamasoft.balancer.TagBalancer#modifyName(String,short)": {
     "hash": "f1f85a40419d72c0",
     "en": "Modifies the given name based on the specified mode.",
@@ -318,6 +323,11 @@
     "hash": "9d4edab8a1e4c3bd",
     "en": "Processing instruction.",
     "ja": "処理命令。"
+  },
+  "net.zamasoft.balancer.TagBalancer#reopensFormattingAfter(short)": {
+    "hash": "a4d59b6a8cc0cbc1",
+    "en": "False for the end tags that clear the list of active formatting elements up to the last marker (td, th,\ncaption, table, applet, marquee, object): formatting elements opened inside them do not come back after them.",
+    "ja": "活性な書式要素の一覧を最後の区切りまで消す終了タグ(td、th、caption、table、applet、marquee、object)で偽。\nその中で開いた書式要素は、その後ろで開き直しません。"
   },
   "net.zamasoft.balancer.TagBalancer#reset(XMLComponentManager)": {
     "hash": "3dfd50e7fce9c035",
