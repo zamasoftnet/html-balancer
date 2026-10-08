@@ -26,8 +26,9 @@ import org.xml.sax.helpers.DefaultHandler;
  * Also table rows whose cells are not closed (one {@code tbody} per row until 2026-10-09: html-entities, textfiles,
  * whatwg-tables) and options inside an {@code optgroup} (they used to close the group: rails-guides), the form end
  * tag and the form element pointer (un.org, lwn.net), tables that close a p outside quirks mode, implied colgroups
- * (w3.org), the options of a datalist, content after the body end tag, and form controls and labels inside a
- * button (pmc.ncbi.nlm.nih.gov).
+ * (w3.org), the options of a datalist, content after the body end tag, form controls and labels inside a button
+ * (pmc.ncbi.nlm.nih.gov), and block start tags that leave code, label and other phrasing elements open (react.dev,
+ * docusaurus.io).
  * Each case is checked with legacy.xml, with html4.xml, and with legacy.xml switched to html4.xml at the body start
  * tag, as foliojet does for documents in standards mode.
  * </p>
@@ -161,6 +162,14 @@ class TagBalancerTest {
 			<button><label>a<input></label></button>z | <button><label>a<input></label></button>z
 			<button>a<button>b</button>c | <button>a</button><button>b</button>c
 			<p><button>a<p>b</button>c | <p><button>a<p>b</p></button>c</p>
+			# A block start tag leaves code, label, cite, kbd, var ... open; it closes only a p (react.dev's code blocks)
+			<code class=x><div>a</div><div>b</div></code>z | <code class="x"><div>a</div><div>b</div></code>z
+			<label>u<div>x</div>v</label>w | <label>u<div>x</div>v</label>w
+			<cite><p>x</p></cite>y | <cite><p>x</p></cite>y
+			<kbd><ul><li>a</ul></kbd>b | <kbd><ul><li>a</li></ul></kbd>b
+			<code>a<table><tr><td>b</table>c</code> | <code>a<table><tbody><tr><td>b</td></tr></tbody></table>c</code>
+			<code>a<h2>b</h2>c</code>d | <code>a<h2>b</h2>c</code>d
+			<var>a<hr>b</var> | <var>a<hr>b</var>
 			# </body> closes nothing: what follows, even after </html>, goes on in the body (vercel.com, material-web)
 			<div class=x><p>a</p></div></body></html><div><p>b</p></div> | <div class="x"><p>a</p></div><div><p>b</p></div>
 			<div><p>a</p></body></html><p>b</p> | <div><p>a</p><p>b</p></div>

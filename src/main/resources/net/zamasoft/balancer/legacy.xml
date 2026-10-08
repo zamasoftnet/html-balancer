@@ -136,6 +136,9 @@
 		ADDRESS,BLOCKQUOTE,CAPTION,CENTER,DIR,DIV,DL,FIELDSET,FORM,
 		$h,HR,ISINDEX,LISTING,MENU,MULTICOL,OL,P,PARAM,PRE,TABLE,UL
 	</tagset>
+	<!-- Block start tags no longer close these (2026-10-09; $inline was in their openCloses). The HTML
+	     Standard's "in body" closes only a p in button scope there, and Chrome keeps code, label, cite ...
+	     open around the block (react.dev's code blocks hold a div per line inside code). -->
 	<tagset name="inline">
 		ABBR,ACRONYM,CITE,CODE,DFN,KBD,LABEL,SAMP,VAR
 	</tagset>
@@ -182,7 +185,7 @@
 
 	<tag name="ADDRESS">
 		<openCloses>
-			$inline,ADDRESS,P
+			ADDRESS,P
 		</openCloses>
 		<stopCloseBy>
 			CAPTION,$cell,BUTTON
@@ -273,7 +276,7 @@
 
 	<tag name="BLOCKQUOTE">
 		<openCloses>
-			$inline,ADDRESS,P
+			ADDRESS,P
 		</openCloses>
 		<stopCloseBy>
 			CAPTION,$cell,BUTTON
@@ -329,7 +332,7 @@
 
 	<tag name="CENTER">
 		<openCloses>
-			$inline,ADDRESS
+			ADDRESS
 		</openCloses>
 		<discardsOpen>
 			$ignore
@@ -417,7 +420,7 @@
 
 	<tag name="DIR">
 		<openCloses>
-			$inline,ADDRESS,OL,P
+			ADDRESS,OL,P
 		</openCloses>
 		<stopCloseBy>
 			CAPTION,$cell,BUTTON
@@ -432,7 +435,7 @@
 
 	<tag name="DIV">
 		<openCloses>
-			$inline,ADDRESS,P
+			ADDRESS,P
 		</openCloses>
 		<stopCloseBy>
 			CAPTION,$cell,BUTTON
@@ -539,7 +542,7 @@
 
 	<tag name="DL">
 		<openCloses>
-			$inline,ADDRESS,P
+			ADDRESS,P
 		</openCloses>
 		<closeCloses>
 			LI,DT,DD
@@ -589,7 +592,7 @@
 
 	<tag name="FIELDSET">
 		<openCloses>
-			$inline,ADDRESS,P
+			ADDRESS,P
 		</openCloses>
 		<stopCloseBy>
 			CAPTION,$cell,BUTTON
@@ -614,7 +617,7 @@
 
 	<tag name="FORM">
 		<openCloses>
-			$inline,ADDRESS
+			ADDRESS
 		</openCloses>
 		<stopCloseBy>
 			CAPTION,$cell
@@ -643,7 +646,7 @@
 			$h,-H1
 		</alternates>
 		<openCloses>
-			$inline,$h,ADDRESS,P,DT
+			$h,ADDRESS,P,DT
 		</openCloses>
 		<stopCloseBy>
 			CAPTION,$cell,BUTTON
@@ -661,7 +664,7 @@
 			$h,-H2
 		</alternates>
 		<openCloses>
-			$inline,$h,ADDRESS,P,DT
+			$h,ADDRESS,P,DT
 		</openCloses>
 		<stopCloseBy>
 			CAPTION,$cell,BUTTON
@@ -679,7 +682,7 @@
 			$h,-H3
 		</alternates>
 		<openCloses>
-			$inline,$h,ADDRESS,P,DT
+			$h,ADDRESS,P,DT
 		</openCloses>
 		<stopCloseBy>
 			CAPTION,$cell,BUTTON
@@ -697,7 +700,7 @@
 			$h,-H4
 		</alternates>
 		<openCloses>
-			$inline,$h,ADDRESS,P,DT
+			$h,ADDRESS,P,DT
 		</openCloses>
 		<stopCloseBy>
 			CAPTION,$cell,BUTTON
@@ -715,7 +718,7 @@
 			$h,-H5
 		</alternates>
 		<openCloses>
-			$inline,$h,ADDRESS,P,DT
+			$h,ADDRESS,P,DT
 		</openCloses>
 		<stopCloseBy>
 			CAPTION,$cell,BUTTON
@@ -733,7 +736,7 @@
 			$h,-H6
 		</alternates>
 		<openCloses>
-			$inline,$h,ADDRESS,P,DT
+			$h,ADDRESS,P,DT
 		</openCloses>
 		<stopCloseBy>
 			CAPTION,$cell,BUTTON
@@ -755,7 +758,7 @@
 
 	<tag name="HR" flags="EMPTY">
 		<openCloses>
-			$inline,ADDRESS,P
+			ADDRESS,P
 		</openCloses>
 		<stopCloseBy>
 			CAPTION,$cell,BUTTON
@@ -813,7 +816,7 @@
 
 	<tag name="ISINDEX" flags="EMPTY">
 		<openCloses>
-			$inline,ADDRESS,P
+			ADDRESS,P
 		</openCloses>
 		<stopCloseBy>
 			CAPTION,$cell,BUTTON
@@ -888,7 +891,7 @@
 
 	<tag name="LISTING">
 		<openCloses>
-			$inline,ADDRESS,P
+			ADDRESS,P
 		</openCloses>
 		<closeCloses>
 			LI,DT,DD
@@ -924,7 +927,7 @@
 
 	<tag name="MENU">
 		<openCloses>
-			$inline,ADDRESS,P
+			ADDRESS,P
 		</openCloses>
 		<stopCloseBy>
 			CAPTION,$cell,BUTTON
@@ -945,7 +948,7 @@
 
 	<tag name="MULTICOL">
 		<openCloses>
-			$inline,MULTICOL,ADDRESS,P
+			MULTICOL,ADDRESS,P
 		</openCloses>
 		<stopCloseBy>
 			CAPTION,$cell,BUTTON
@@ -1011,7 +1014,7 @@
 
 	<tag name="OL">
 		<openCloses>
-			$inline,ADDRESS,P
+			ADDRESS,P
 		</openCloses>
 		<closeCloses>
 			LI,DT,DD
@@ -1052,7 +1055,7 @@
 
 	<tag name="P" flags="END_TO_EMPTY">
 		<openCloses>
-			$inline,P
+			P
 		</openCloses>
 		<stopCloseBy>
 			CAPTION,$cell,BUTTON
@@ -1088,7 +1091,7 @@
 
 	<tag name="PRE">
 		<openCloses>
-			$inline,ADDRESS,P
+			ADDRESS,P
 		</openCloses>
 		<stopCloseBy>
 			CAPTION,$cell,BUTTON
@@ -1279,7 +1282,7 @@
 
 	<tag name="TABLE">
 		<openCloses>
-			$inline,ADDRESS,TABLE
+			ADDRESS,TABLE
 		</openCloses>
 		<stopCloseBy>
 			CAPTION,$cell
@@ -1439,7 +1442,7 @@
 
 	<tag name="UL">
 		<openCloses>
-			$inline,ADDRESS,P
+			ADDRESS,P
 		</openCloses>
 		<closeCloses>
 			LI,DT,DD
