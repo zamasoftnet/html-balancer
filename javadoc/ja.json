@@ -1,71 +1,392 @@
 {
+  "net.zamasoft.balancer.AugmentationsImpl": {
+    "hash": "25c254b7f0da0f1c",
+    "en": "Immutable copy of HtmlUnit NekoHTML augmentation location data.",
+    "ja": "HtmlUnit NekoHTMLの付加情報(augmentation)の位置データを写した、変更できないコピーです。"
+  },
   "net.zamasoft.balancer.ElementProps": {
+    "hash": "29991895631d67e4",
+    "en": "Information for balancing elements.\n\n@author MIYABE Tatsuhiko\n@version $Id: ElementProps.java 1552 2018-04-26 01:43:24Z miyabe $",
     "ja": "要素のバランスのための情報です。\n\n@author MIYABE Tatsuhiko\n@version $Id: ElementProps.java 1552 2018-04-26 01:43:24Z miyabe $"
   },
   "net.zamasoft.balancer.ElementProps#FLAG_BODY": {
+    "hash": "ed398c6423863576",
+    "en": "Document content (BODY).",
     "ja": "文書の内容です。(BODY)"
   },
   "net.zamasoft.balancer.ElementProps#FLAG_CLOSE_BY_TEXT": {
+    "hash": "002f7d60da002d49",
+    "en": "Closes when text occurs.",
     "ja": "テキストにより閉じられます。"
   },
   "net.zamasoft.balancer.ElementProps#FLAG_EMPTY": {
+    "hash": "a313a15f7fb4e72f",
+    "en": "An empty tag (BR, HR, COL, etc.).",
     "ja": "空タグです。 (BR, HR, COLなど)"
   },
   "net.zamasoft.balancer.ElementProps#FLAG_END_TO_EMPTY": {
+    "hash": "40a5b28ba81b6623",
+    "en": "Converts an end tag to an empty tag (BR, P).",
     "ja": "終了タグを空タグに変換します。 (BR, P)"
   },
   "net.zamasoft.balancer.ElementProps#FLAG_HEAD": {
+    "hash": "ceee665f62d87018",
+    "en": "Head content (LINK, META, LINK, etc.).",
     "ja": "ヘッダの内容です。(LINK, META, LINKなど)"
   },
   "net.zamasoft.balancer.ElementProps#FLAG_IGNORE_TEXT": {
+    "hash": "eb994934fe7854bb",
+    "en": "Ignores text directly inside this element.",
     "ja": "直下のテキストを無視します。"
   },
   "net.zamasoft.balancer.ElementProps#SET_ALTERNATES": {
+    "hash": "aeb56d5dd04b22fe",
+    "en": "Alternative elements (such as TH for TD). An end tag for an alternative to this element is replaced\nwith an end tag for this element.",
     "ja": "代替要素です(TDに対するTHなど)。 この要素に対する、代替要素の閉じタグがあれば、この要素に入れ替えられます。"
   },
   "net.zamasoft.balancer.ElementProps#SET_CLOSE_CLOSES": {
+    "hash": "e486e3c22c18e617",
+    "en": "Elements that do not resume when this element's end tag closes them. When tags do not match, the end tag\ncloses and reopens parent elements, but these elements do not reopen.",
     "ja": "この要素の終了タグにより閉じられた場合に継続しない要素です。 タグの不一致がある場合、終了タグで親の要素は閉じて開かれますが、この要素は再開しません。"
   },
   "net.zamasoft.balancer.ElementProps#SET_DIGS_FOR": {
+    "hash": "d006bdf7a3b02bc0",
+    "en": "Unwinds the ancestor stack until the specified element is found. Does not unwind if the element is absent.",
     "ja": "指定の要素が見つかるまで先祖を掘り下げます。 要素がない場合は掘り下げません。"
   },
   "net.zamasoft.balancer.ElementProps#SET_DISCARDS_CLOSE": {
+    "hash": "35efd789ed7b352d",
+    "en": "Elements whose end tags are ignored directly inside this element.",
     "ja": "この要素の直下で終了タグを無視する要素です。"
   },
   "net.zamasoft.balancer.ElementProps#SET_DISCARDS_OPEN": {
+    "hash": "e9a05ef21ae52b69",
+    "en": "Elements whose start tags are ignored directly inside this element.",
     "ja": "この要素の直下で開始タグを無視する要素です。"
   },
   "net.zamasoft.balancer.ElementProps#SET_INSERT_BY_TEXT": {
+    "hash": "fb0438cb3ed6b5c4",
+    "en": "Elements to insert when text occurs.",
     "ja": "テキストにより挿入する要素です。"
   },
   "net.zamasoft.balancer.ElementProps#SET_INSERT_PARENTS": {
+    "hash": "7f6412f0de0f5b40",
+    "en": "Elements automatically inserted as parents of this element (such as TR for TD).\nNo element is inserted if the parent is one of the specified elements.",
     "ja": "この要素の親に自動的に挿入される要素です(TDに対するTRなど)。 親が指定の要素であれば挿入されません。"
   },
   "net.zamasoft.balancer.ElementProps#SET_OPEN_CLOSES": {
+    "hash": "fb9b11a2c47aeee7",
+    "en": "Ancestor elements that this element's start tag closes. The ancestor stack is unwound to the specified element.",
     "ja": "この要素の開始タグにより閉じる先祖要素です。 指定の要素まで掘り下げられます。"
   },
   "net.zamasoft.balancer.ElementProps#SET_OPEN_SPLITS": {
+    "hash": "ba66dc01c8e26a11",
+    "en": "Parent elements that close at this element's start tag and reopen immediately after it.",
     "ja": "この要素の開始タグにより閉じて直後で開く親要素です。"
   },
   "net.zamasoft.balancer.ElementProps#SET_STOP_CLOSE_BY": {
+    "hash": "d756312068f4c9ef",
+    "en": "Ancestor elements that stop the unwinding performed by SET_OPEN_CLOSES.",
     "ja": "SET_OPEN_CLOSESによる掘り下げを停止する先祖要素です。"
   },
   "net.zamasoft.balancer.ElementProps.ElementProp#code": {
+    "hash": "4785260f568e3305",
+    "en": "The element code.",
     "ja": "要素のコードです。"
   },
   "net.zamasoft.balancer.ElementProps.ElementProp#flags": {
+    "hash": "7a9cabbef3d39f5c",
+    "en": "Flags.",
     "ja": "フラグです。"
   },
   "net.zamasoft.balancer.SAXParser": {
+    "hash": "2f36cbbcbf285a40",
+    "en": "A SAXParser that uses a custom tag balancer.\n\n@author MIYABE Tatsuhiko\n@version $Id: SAXParser.java 1552 2018-04-26 01:43:24Z miyabe $",
     "ja": "独自のタグバランサを利用するSAXParserです。\n\n@author MIYABE Tatsuhiko\n@version $Id: SAXParser.java 1552 2018-04-26 01:43:24Z miyabe $"
   },
+  "net.zamasoft.balancer.TagBalancer": {
+    "hash": "1eb61afdee63986e",
+    "en": "Balances tags in an HTML document. This component receives document events\nand tries to correct many common mistakes that human (and computer) HTML\ndocument authors make. This tag balancer can:\n<ul>\n<li>add missing parent elements;\n<li>automatically close elements with optional end tags; and\n<li>handle mis-matched inline element tags.\n</ul>\n<p>\nThis component recognizes the following features:\n<ul>\n<li>http://cyberneko.org/html/features/augmentations\n<li>http://cyberneko.org/html/features/report-errors\n<li>http://cyberneko.org/html/features/balance-tags/document-fragment\n<li>http://cyberneko.org/html/features/balance-tags/ignore-outside-content\n</ul>\n<p>\nThis component recognizes the following properties:\n<ul>\n<li>http://cyberneko.org/html/properties/names/elems\n<li>http://cyberneko.org/html/properties/names/attrs\n<li>http://cyberneko.org/html/properties/error-reporter\n</ul>\n\n@see HTMLElements\n\n@author Andy Clark\n@author Marc Guillemot\n@author Tatsuhiko Miyabe\n\n@version $Id: TagBalancer.java 1539 2018-01-20 06:37:23Z miyabe $",
+    "ja": "HTML文書のタグのバランスをとります。このコンポーネントは文書のイベントを受け取り、\n人間(およびコンピュータ)がHTML文書を書くときによくある間違いの多くを\n正そうとします。このタグバランサは次のことができます:\n<ul>\n<li>欠けている親要素を補う。\n<li>終了タグを省略できる要素を自動的に閉じる。\n<li>対応の合わないインライン要素のタグを処理する。\n</ul>\n<p>\nこのコンポーネントは次のフィーチャを認識します:\n<ul>\n<li>http://cyberneko.org/html/features/augmentations\n<li>http://cyberneko.org/html/features/report-errors\n<li>http://cyberneko.org/html/features/balance-tags/document-fragment\n<li>http://cyberneko.org/html/features/balance-tags/ignore-outside-content\n</ul>\n<p>\nこのコンポーネントは次のプロパティを認識します:\n<ul>\n<li>http://cyberneko.org/html/properties/names/elems\n<li>http://cyberneko.org/html/properties/names/attrs\n<li>http://cyberneko.org/html/properties/error-reporter\n</ul>\n\n@see HTMLElements\n\n@author Andy Clark\n@author Marc Guillemot\n@author Tatsuhiko Miyabe\n\n@version $Id: TagBalancer.java 1539 2018-01-20 06:37:23Z miyabe $"
+  },
+  "net.zamasoft.balancer.TagBalancer#DOCUMENT_FRAGMENT": {
+    "hash": "00579024cd3e9986",
+    "en": "Document fragment balancing only.",
+    "ja": "文書の断片だけをバランスする指定です。"
+  },
+  "net.zamasoft.balancer.TagBalancer#NAMESPACES": {
+    "hash": "46ab34b5cedef710",
+    "en": "Namespaces.",
+    "ja": "名前空間です。"
+  },
+  "net.zamasoft.balancer.TagBalancer#NAMES_ATTRS": {
+    "hash": "fb2b650d0e8a24d8",
+    "en": "Modify HTML attribute names: { \"upper\", \"lower\", \"default\" }.",
+    "ja": "HTMLの属性名の変更です: { \"upper\", \"lower\", \"default\" }。"
+  },
+  "net.zamasoft.balancer.TagBalancer#NAMES_ELEMS": {
+    "hash": "5aa291ca53ac202e",
+    "en": "Modify HTML element names: { \"upper\", \"lower\", \"default\" }.",
+    "ja": "HTMLの要素名の変更です: { \"upper\", \"lower\", \"default\" }。"
+  },
+  "net.zamasoft.balancer.TagBalancer#NAMES_LOWERCASE": {
+    "hash": "9d8d155b63a3f999",
+    "en": "Lowercase HTML names.",
+    "ja": "HTMLの名前を小文字にします。"
+  },
+  "net.zamasoft.balancer.TagBalancer#NAMES_MATCH": {
+    "hash": "5c8945e89160ed4c",
+    "en": "Match HTML element names.",
+    "ja": "HTMLの要素名に合わせます。"
+  },
+  "net.zamasoft.balancer.TagBalancer#NAMES_NO_CHANGE": {
+    "hash": "ce0f8b571a73f96f",
+    "en": "Don't modify HTML names.",
+    "ja": "HTMLの名前を変更しません。"
+  },
+  "net.zamasoft.balancer.TagBalancer#NAMES_UPPERCASE": {
+    "hash": "dbca628017324ff9",
+    "en": "Uppercase HTML names.",
+    "ja": "HTMLの名前を大文字にします。"
+  },
+  "net.zamasoft.balancer.TagBalancer#callEndElement(QName,Augmentations)": {
+    "hash": "23ba1b5a66f6159b",
+    "en": "Call document handler end element.",
+    "ja": "ドキュメントハンドラの要素の終了を呼び出します。"
+  },
+  "net.zamasoft.balancer.TagBalancer#callStartElement(QName,XMLAttributes,Augmentations)": {
+    "hash": "fb733bc6a3019ca6",
+    "en": "Call document handler start element.",
+    "ja": "ドキュメントハンドラの要素の開始を呼び出します。"
+  },
+  "net.zamasoft.balancer.TagBalancer#characters(XMLString,Augmentations)": {
+    "hash": "789465cab932660b",
+    "en": "Characters.",
+    "ja": "文字データ。"
+  },
+  "net.zamasoft.balancer.TagBalancer#comment(XMLString,Augmentations)": {
+    "hash": "e59b4380b78cfd0c",
+    "en": "Comment.",
+    "ja": "コメント。"
+  },
+  "net.zamasoft.balancer.TagBalancer#doctypeDecl(String,String,String,Augmentations)": {
+    "hash": "a2294603b986fc5e",
+    "en": "Doctype declaration.",
+    "ja": "文書型宣言。"
+  },
+  "net.zamasoft.balancer.TagBalancer#emptyAttributes()": {
+    "hash": "1567ad8dac78c027",
+    "en": "Returns a set of empty attributes.",
+    "ja": "空の属性の集まりを返します。"
+  },
+  "net.zamasoft.balancer.TagBalancer#emptyElement(QName,XMLAttributes,Augmentations)": {
+    "hash": "e49c3be0e08a8ac9",
+    "en": "Empty element.",
+    "ja": "空要素。"
+  },
+  "net.zamasoft.balancer.TagBalancer#endCDATA(Augmentations)": {
+    "hash": "eaf0d555d5ee0e36",
+    "en": "End CDATA section.",
+    "ja": "CDATAセクションの終了。"
+  },
+  "net.zamasoft.balancer.TagBalancer#endDocument(Augmentations)": {
+    "hash": "02671f89e35342fd",
+    "en": "End document.",
+    "ja": "文書の終了。"
+  },
+  "net.zamasoft.balancer.TagBalancer#endElement(QName,Augmentations)": {
+    "hash": "d71204233868b79e",
+    "en": "End element.",
+    "ja": "要素の終了。"
+  },
+  "net.zamasoft.balancer.TagBalancer#endPrefixMapping(String,Augmentations)": {
+    "hash": "373025a4712ecb82",
+    "en": "End prefix mapping.",
+    "ja": "接頭辞の対応付けの終了。"
+  },
+  "net.zamasoft.balancer.TagBalancer#fDocumentFragment": {
+    "hash": "00579024cd3e9986",
+    "en": "Document fragment balancing only.",
+    "ja": "文書の断片だけをバランスする指定です。"
+  },
+  "net.zamasoft.balancer.TagBalancer#fDocumentHandler": {
+    "hash": "f1ce664f3f702c7b",
+    "en": "The document handler.",
+    "ja": "ドキュメントハンドラです。"
+  },
+  "net.zamasoft.balancer.TagBalancer#fDocumentSource": {
+    "hash": "5925c8234ef81ccc",
+    "en": "The document source.",
+    "ja": "ドキュメントソースです。"
+  },
+  "net.zamasoft.balancer.TagBalancer#fElementStack": {
+    "hash": "79fa5352c53dbf63",
+    "en": "The element stack.",
+    "ja": "要素のスタックです。"
+  },
+  "net.zamasoft.balancer.TagBalancer#fNamesAttrs": {
+    "hash": "8c6660e593e2111b",
+    "en": "Modify HTML attribute names.",
+    "ja": "HTMLの属性名の変更です。"
+  },
+  "net.zamasoft.balancer.TagBalancer#fNamesElems": {
+    "hash": "cf90284c25077c87",
+    "en": "Modify HTML element names.",
+    "ja": "HTMLの要素名の変更です。"
+  },
+  "net.zamasoft.balancer.TagBalancer#fNamespaces": {
+    "hash": "46ab34b5cedef710",
+    "en": "Namespaces.",
+    "ja": "名前空間です。"
+  },
+  "net.zamasoft.balancer.TagBalancer#fSeenAnything": {
+    "hash": "18d5057b8937f7cd",
+    "en": "True if seen anything. Important for xml declaration.",
+    "ja": "何かを検出した場合はtrueです。XML宣言のために重要です。"
+  },
+  "net.zamasoft.balancer.TagBalancer#fSeenBodyElement": {
+    "hash": "9ce432b61611402a",
+    "en": "True if seen &lt;body&lt; element.",
+    "ja": "&lt;body&lt;要素を検出した場合はtrueです。"
+  },
+  "net.zamasoft.balancer.TagBalancer#fSeenDoctype": {
+    "hash": "b0fc6add8a5f144e",
+    "en": "True if root element has been seen.",
+    "ja": "ルート要素を検出した場合はtrueです。"
+  },
+  "net.zamasoft.balancer.TagBalancer#fSeenHeadElement": {
+    "hash": "8b4973a083599720",
+    "en": "True if seen &lt;head&lt; element.",
+    "ja": "&lt;head&lt;要素を検出した場合はtrueです。"
+  },
+  "net.zamasoft.balancer.TagBalancer#fSeenRootElement": {
+    "hash": "b0fc6add8a5f144e",
+    "en": "True if root element has been seen.",
+    "ja": "ルート要素を検出した場合はtrueです。"
+  },
+  "net.zamasoft.balancer.TagBalancer#getDocumentHandler()": {
+    "hash": "496f3b168be5d718",
+    "en": "Returns the document handler.",
+    "ja": "ドキュメントハンドラを返します。"
+  },
+  "net.zamasoft.balancer.TagBalancer#getDocumentSource()": {
+    "hash": "d3715db6b2ad276f",
+    "en": "Returns the document source.",
+    "ja": "ドキュメントソースを返します。"
+  },
+  "net.zamasoft.balancer.TagBalancer#getElementProp(QName)": {
+    "hash": "6943d9913c2d95c0",
+    "en": "Returns an HTML element.",
+    "ja": "HTML要素を返します。"
+  },
+  "net.zamasoft.balancer.TagBalancer#getFeatureDefault(String)": {
+    "hash": "cc352637e5ce572d",
+    "en": "Returns the default state for a feature.",
+    "ja": "フィーチャのデフォルトの状態を返します。"
+  },
+  "net.zamasoft.balancer.TagBalancer#getNamesValue(String)": {
+    "hash": "220f1d5f38e34ef1",
+    "en": "Converts HTML names string value to constant value.\n\n@see #NAMES_NO_CHANGE\n@see #NAMES_LOWERCASE\n@see #NAMES_UPPERCASE",
+    "ja": "HTMLの名前の指定の文字列値を定数値に変換します。\n\n@see #NAMES_NO_CHANGE\n@see #NAMES_LOWERCASE\n@see #NAMES_UPPERCASE"
+  },
+  "net.zamasoft.balancer.TagBalancer#getPropertyDefault(String)": {
+    "hash": "6f583f7f3af035d9",
+    "en": "Returns the default state for a property.",
+    "ja": "プロパティのデフォルトの状態を返します。"
+  },
+  "net.zamasoft.balancer.TagBalancer#getRecognizedFeatures()": {
+    "hash": "ecec77f597c85f53",
+    "en": "Returns recognized features.",
+    "ja": "認識するフィーチャを返します。"
+  },
+  "net.zamasoft.balancer.TagBalancer#getRecognizedProperties()": {
+    "hash": "028e9656bb315e6b",
+    "en": "Returns recognized properties.",
+    "ja": "認識するプロパティを返します。"
+  },
+  "net.zamasoft.balancer.TagBalancer#ignorableWhitespace(XMLString,Augmentations)": {
+    "hash": "36dd32269a38d91b",
+    "en": "Ignorable whitespace.",
+    "ja": "無視できる空白。"
+  },
+  "net.zamasoft.balancer.TagBalancer#modifyName(String,short)": {
+    "hash": "f1f85a40419d72c0",
+    "en": "Modifies the given name based on the specified mode.",
+    "ja": "指定したモードに従って、与えられた名前を変更します。"
+  },
+  "net.zamasoft.balancer.TagBalancer#processingInstruction(String,XMLString,Augmentations)": {
+    "hash": "9d4edab8a1e4c3bd",
+    "en": "Processing instruction.",
+    "ja": "処理命令。"
+  },
+  "net.zamasoft.balancer.TagBalancer#reset(XMLComponentManager)": {
+    "hash": "3dfd50e7fce9c035",
+    "en": "Resets the component.",
+    "ja": "コンポーネントをリセットします。"
+  },
+  "net.zamasoft.balancer.TagBalancer#setDocumentHandler(XMLDocumentHandler)": {
+    "hash": "795c7d76b13dc03e",
+    "en": "Sets the document handler.",
+    "ja": "ドキュメントハンドラを設定します。"
+  },
+  "net.zamasoft.balancer.TagBalancer#setDocumentSource(XMLDocumentSource)": {
+    "hash": "ea15a70149d51e0b",
+    "en": "Sets the document source.",
+    "ja": "ドキュメントソースを設定します。"
+  },
+  "net.zamasoft.balancer.TagBalancer#setFeature(String,boolean)": {
+    "hash": "9da5c3883dbe2425",
+    "en": "Sets a feature.",
+    "ja": "フィーチャを設定します。"
+  },
+  "net.zamasoft.balancer.TagBalancer#setProperty(String,Object)": {
+    "hash": "1b2fdd82d250f6c7",
+    "en": "Sets a property.",
+    "ja": "プロパティを設定します。"
+  },
+  "net.zamasoft.balancer.TagBalancer#startCDATA(Augmentations)": {
+    "hash": "931d544a7c968fbd",
+    "en": "Start CDATA section.",
+    "ja": "CDATAセクションの開始。"
+  },
+  "net.zamasoft.balancer.TagBalancer#startDocument(XMLLocator,String,Augmentations)": {
+    "hash": "e8a24590aae9c79b",
+    "en": "Start document.",
+    "ja": "文書の開始。"
+  },
+  "net.zamasoft.balancer.TagBalancer#startDocument(XMLLocator,String,NamespaceContext,Augmentations)": {
+    "hash": "e8a24590aae9c79b",
+    "en": "Start document.",
+    "ja": "文書の開始。"
+  },
+  "net.zamasoft.balancer.TagBalancer#startElement(QName,XMLAttributes,Augmentations)": {
+    "hash": "1b09d69af9e563a6",
+    "en": "Start element.",
+    "ja": "要素の開始。"
+  },
+  "net.zamasoft.balancer.TagBalancer#startPrefixMapping(String,String,Augmentations)": {
+    "hash": "8e836bd95651e64d",
+    "en": "Start prefix mapping.",
+    "ja": "接頭辞の対応付けの開始。"
+  },
+  "net.zamasoft.balancer.TagBalancer#xmlDecl(String,String,String,Augmentations)": {
+    "hash": "ffd90e712997daf4",
+    "en": "XML declaration.",
+    "ja": "XML宣言。"
+  },
   "net.zamasoft.balancer.XNIRecorder": {
+    "hash": "42272acc958da149",
+    "en": "Creates a SAXEvent instance for each event.\n\n@author MIYABE Tatsuhiko\n@version $Id: XNIRecorder.java 1552 2018-04-26 01:43:24Z miyabe $",
     "ja": "SAXEventインスタンスをイベントごとに生成します。\n\n@author MIYABE Tatsuhiko\n@version $Id: XNIRecorder.java 1552 2018-04-26 01:43:24Z miyabe $"
   },
   "net.zamasoft.balancer.XNIRecorder.XNIEvent": {
+    "hash": "fe0aa02f52d5971a",
+    "en": "Stores and replays SAX events.\n\n@author MIYABE Tatsuhiko\n@version $Id: XNIRecorder.java 1552 2018-04-26 01:43:24Z miyabe $",
     "ja": "SAXイベントを保持し、再現します。\n\n@author MIYABE Tatsuhiko\n@version $Id: XNIRecorder.java 1552 2018-04-26 01:43:24Z miyabe $"
   },
   "net.zamasoft.balancer.XNIRecorder.XNIEvent#doEvent(XMLDocumentHandler)": {
+    "hash": "77a0594b343e5767",
+    "en": "Executes the event.\n\n@param handler",
     "ja": "イベントを実行します。\n\n@param handler"
   }
 }
