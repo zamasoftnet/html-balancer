@@ -26,7 +26,8 @@ import org.xml.sax.helpers.DefaultHandler;
  * Also table rows whose cells are not closed (one {@code tbody} per row until 2026-10-09: html-entities, textfiles,
  * whatwg-tables) and options inside an {@code optgroup} (they used to close the group: rails-guides), the form end
  * tag and the form element pointer (un.org, lwn.net), tables that close a p outside quirks mode, implied colgroups
- * (w3.org), the options of a datalist and content after the body end tag.
+ * (w3.org), the options of a datalist, content after the body end tag, and form controls and labels inside a
+ * button (pmc.ncbi.nlm.nih.gov).
  * Each case is checked with legacy.xml, with html4.xml, and with legacy.xml switched to html4.xml at the body start
  * tag, as foliojet does for documents in standards mode.
  * </p>
@@ -152,6 +153,14 @@ class TagBalancerTest {
 			<table><colgroup span=1><colgroup span=3><colgroup span=3><thead><tr><th>h</table> | <table><colgroup span="1"></colgroup><colgroup span="3"></colgroup><colgroup span="3"></colgroup><thead><tr><th>h</th></tr></thead></table>
 			# The options of a datalist are kept
 			<datalist id=x><option value=a><option value=b></datalist>z | <datalist id="x"><option value="a"></option><option value="b"></option></datalist>z
+			# A button keeps label, input, select, textarea, closes an open button, and bounds the p a block start tag closes
+			<button class=t><label>Back to Top</label><img src=x.svg alt=i></button>z | <button class="t"><label>Back to Top</label><img src="x.svg" alt="i"></button>z
+			<button><input type=text value=v></button>z | <button><input type="text" value="v"></button>z
+			<button><select><option>a</option></select></button>z | <button><select><option>a</option></select></button>z
+			<button><textarea>x</textarea></button>z | <button><textarea>x</textarea></button>z
+			<button><label>a<input></label></button>z | <button><label>a<input></label></button>z
+			<button>a<button>b</button>c | <button>a</button><button>b</button>c
+			<p><button>a<p>b</button>c | <p><button>a<p>b</p></button>c</p>
 			# </body> closes nothing: what follows, even after </html>, goes on in the body (vercel.com, material-web)
 			<div class=x><p>a</p></div></body></html><div><p>b</p></div> | <div class="x"><p>a</p></div><div><p>b</p></div>
 			<div><p>a</p></body></html><p>b</p> | <div><p>a</p><p>b</p></div>

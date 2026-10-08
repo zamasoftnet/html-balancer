@@ -185,7 +185,7 @@
 			$inline,ADDRESS,P
 		</openCloses>
 		<stopCloseBy>
-			CAPTION,$cell
+			CAPTION,$cell,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore
@@ -276,7 +276,7 @@
 			$inline,ADDRESS,P
 		</openCloses>
 		<stopCloseBy>
-			CAPTION,$cell
+			CAPTION,$cell,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore
@@ -301,12 +301,17 @@
 		</discardsOpen>
 	</tag>
 
+	<!-- A button keeps input, label, select and textarea and closes an open button, as the HTML
+	     Standard's parser does (2026-10-09; HTML 4 forbade them inside a button). The start tags that close an
+	     open p stop at a button (BUTTON in their stopCloseBy: "has a p element in button scope"). -->
 	<tag name="BUTTON">
+		<openCloses>BUTTON</openCloses>
+		<stopCloseBy>CAPTION,$cell</stopCloseBy>
 		<discardsOpen>
-			$ignore,INPUT,LABEL,SELECT,TEXTAREA
+			$ignore
 		</discardsOpen>
 		<discardsClose>
-			ABBR,ACRONYM,BDO,CITE,CODE,DD,DFN,DT,EM,KBD,MAP,MARQUEE,INPUT,LABEL,SELECT,TEXTAREA,INPUT,LABEL,SELECT,TEXTAREA
+			ABBR,ACRONYM,BDO,CITE,CODE,DD,DFN,DT,EM,KBD,MAP,MARQUEE
 		</discardsClose>
 	</tag>
 
@@ -415,7 +420,7 @@
 			$inline,ADDRESS,OL,P
 		</openCloses>
 		<stopCloseBy>
-			CAPTION,$cell
+			CAPTION,$cell,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore
@@ -430,7 +435,7 @@
 			$inline,ADDRESS,P
 		</openCloses>
 		<stopCloseBy>
-			CAPTION,$cell
+			CAPTION,$cell,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore
@@ -522,7 +527,7 @@
 			$dl,P
 		</openCloses>
 		<stopCloseBy>
-			CAPTION,$cell,OL,UL,DL,LISTING
+			CAPTION,$cell,OL,UL,DL,LISTING,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore
@@ -540,7 +545,7 @@
 			LI,DT,DD
 		</closeCloses>
 		<stopCloseBy>
-			CAPTION,$cell
+			CAPTION,$cell,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore
@@ -556,7 +561,7 @@
 			$dl,P
 		</openCloses>
 		<stopCloseBy>
-			CAPTION,$cell,OL,UL,DL,LISTING
+			CAPTION,$cell,OL,UL,DL,LISTING,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore
@@ -587,7 +592,7 @@
 			$inline,ADDRESS,P
 		</openCloses>
 		<stopCloseBy>
-			CAPTION,$cell
+			CAPTION,$cell,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore,-LEGEND
@@ -641,7 +646,7 @@
 			$inline,$h,ADDRESS,P,DT
 		</openCloses>
 		<stopCloseBy>
-			CAPTION,$cell
+			CAPTION,$cell,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore
@@ -659,7 +664,7 @@
 			$inline,$h,ADDRESS,P,DT
 		</openCloses>
 		<stopCloseBy>
-			CAPTION,$cell
+			CAPTION,$cell,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore
@@ -677,7 +682,7 @@
 			$inline,$h,ADDRESS,P,DT
 		</openCloses>
 		<stopCloseBy>
-			CAPTION,$cell
+			CAPTION,$cell,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore
@@ -695,7 +700,7 @@
 			$inline,$h,ADDRESS,P,DT
 		</openCloses>
 		<stopCloseBy>
-			CAPTION,$cell
+			CAPTION,$cell,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore
@@ -713,7 +718,7 @@
 			$inline,$h,ADDRESS,P,DT
 		</openCloses>
 		<stopCloseBy>
-			CAPTION,$cell
+			CAPTION,$cell,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore
@@ -731,7 +736,7 @@
 			$inline,$h,ADDRESS,P,DT
 		</openCloses>
 		<stopCloseBy>
-			CAPTION,$cell
+			CAPTION,$cell,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore
@@ -753,7 +758,7 @@
 			$inline,ADDRESS,P
 		</openCloses>
 		<stopCloseBy>
-			CAPTION,$cell
+			CAPTION,$cell,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore
@@ -811,7 +816,7 @@
 			$inline,ADDRESS,P
 		</openCloses>
 		<stopCloseBy>
-			CAPTION,$cell
+			CAPTION,$cell,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore
@@ -867,7 +872,7 @@
 			LI,ABBR,ACRONYM,ADDRESS,CITE,CODE,DFN,KBD,P,SAMP,VAR
 		</openCloses>
 		<stopCloseBy>
-			CAPTION,$cell,OL,UL,DL,LISTING
+			CAPTION,$cell,OL,UL,DL,LISTING,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore
@@ -889,7 +894,7 @@
 			LI,DT,DD
 		</closeCloses>
 		<stopCloseBy>
-			CAPTION,$cell
+			CAPTION,$cell,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore
@@ -922,7 +927,7 @@
 			$inline,ADDRESS,P
 		</openCloses>
 		<stopCloseBy>
-			CAPTION,$cell
+			CAPTION,$cell,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore
@@ -943,7 +948,7 @@
 			$inline,MULTICOL,ADDRESS,P
 		</openCloses>
 		<stopCloseBy>
-			CAPTION,$cell
+			CAPTION,$cell,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore
@@ -1012,7 +1017,7 @@
 			LI,DT,DD
 		</closeCloses>
 		<stopCloseBy>
-			CAPTION,$cell
+			CAPTION,$cell,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore
@@ -1050,7 +1055,7 @@
 			$inline,P
 		</openCloses>
 		<stopCloseBy>
-			CAPTION,$cell
+			CAPTION,$cell,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore
@@ -1086,7 +1091,7 @@
 			$inline,ADDRESS,P
 		</openCloses>
 		<stopCloseBy>
-			CAPTION,$cell
+			CAPTION,$cell,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore
@@ -1440,7 +1445,7 @@
 			LI,DT,DD
 		</closeCloses>
 		<stopCloseBy>
-			CAPTION,$cell
+			CAPTION,$cell,BUTTON
 		</stopCloseBy>
 		<discardsOpen>
 			$ignore
