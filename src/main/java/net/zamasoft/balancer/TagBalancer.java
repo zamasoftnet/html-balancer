@@ -697,6 +697,12 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 			// Do not close the HEAD tag until content starts
 			return;
 		}
+		if (prop.code == HTMLElements.BODY && !this.fDocumentFragment) {
+			// </body> closes nothing: what follows it, even after </html>, goes on in the open elements of the body
+			// (the HTML Standard's "after body" mode reprocesses it "in body"). Next.js pages stream a second copy
+			// of the page there (vercel.com), which used to land outside the body, without its styles (2026-10-09).
+			return;
+		}
 
 		if (!this.fSeenBodyElement && this.fElementStack.top > 0) {
 			// Handle content inside the root element but outside BODY

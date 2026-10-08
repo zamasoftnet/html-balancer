@@ -26,7 +26,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * Also table rows whose cells are not closed (one {@code tbody} per row until 2026-10-09: html-entities, textfiles,
  * whatwg-tables) and options inside an {@code optgroup} (they used to close the group: rails-guides), the form end
  * tag and the form element pointer (un.org, lwn.net), tables that close a p outside quirks mode, implied colgroups
- * (w3.org) and the options of a datalist.
+ * (w3.org), the options of a datalist and content after the body end tag.
  * Each case is checked with legacy.xml, with html4.xml, and with legacy.xml switched to html4.xml at the body start
  * tag, as foliojet does for documents in standards mode.
  * </p>
@@ -152,6 +152,11 @@ class TagBalancerTest {
 			<table><colgroup span=1><colgroup span=3><colgroup span=3><thead><tr><th>h</table> | <table><colgroup span="1"></colgroup><colgroup span="3"></colgroup><colgroup span="3"></colgroup><thead><tr><th>h</th></tr></thead></table>
 			# The options of a datalist are kept
 			<datalist id=x><option value=a><option value=b></datalist>z | <datalist id="x"><option value="a"></option><option value="b"></option></datalist>z
+			# </body> closes nothing: what follows, even after </html>, goes on in the body (vercel.com, material-web)
+			<div class=x><p>a</p></div></body></html><div><p>b</p></div> | <div class="x"><p>a</p></div><div><p>b</p></div>
+			<div><p>a</p></body></html><p>b</p> | <div><p>a</p><p>b</p></div>
+			<p>a</body><p>b | <p>a</p><p>b</p>
+			<p>a</p></body></html><head><title>t</title></head><body class=y><p>b</p></body></html> | <p>a</p><title>t</title><p>b</p>
 			""")
 	void sameTreeAsChrome(final String html, final String chrome) throws Exception {
 		assertEquals(chrome, body("<!DOCTYPE html>", html, "legacy.xml"), "legacy.xml");
