@@ -143,16 +143,16 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 	/** True if seen anything. Important for xml declaration. */
 	protected boolean fSeenAnything;
 
-	/** True if root element has been seen. */
+	/** True if the document type declaration has been seen. */
 	protected boolean fSeenDoctype;
 
 	/** True if root element has been seen. */
 	protected boolean fSeenRootElement;
 
-	/** True if seen &lt;head&lt; element. */
+	/** True if the &lt;head&gt; element has been seen. */
 	protected boolean fSeenHeadElement;
 
-	/** True if seen &lt;body&lt; element. */
+	/** True if the &lt;body&gt; element has been seen. */
 	protected boolean fSeenBodyElement;
 
 	// temp vars

@@ -245,19 +245,19 @@
     "ja": "何かを検出した場合はtrueです。XML宣言のために重要です。"
   },
   "net.zamasoft.balancer.TagBalancer#fSeenBodyElement": {
-    "hash": "9ce432b61611402a",
-    "en": "True if seen &lt;body&lt; element.",
-    "ja": "&lt;body&lt;要素を検出した場合はtrueです。"
+    "hash": "b0c3bae6d28812cc",
+    "en": "True if the &lt;body&gt; element has been seen.",
+    "ja": "&lt;body&gt;要素を検出した場合はtrueです。"
   },
   "net.zamasoft.balancer.TagBalancer#fSeenDoctype": {
-    "hash": "b0fc6add8a5f144e",
-    "en": "True if root element has been seen.",
-    "ja": "ルート要素を検出した場合はtrueです。"
+    "hash": "15658ecbf8bd980d",
+    "en": "True if the document type declaration has been seen.",
+    "ja": "文書型宣言を検出した場合はtrueです。"
   },
   "net.zamasoft.balancer.TagBalancer#fSeenHeadElement": {
-    "hash": "8b4973a083599720",
-    "en": "True if seen &lt;head&lt; element.",
-    "ja": "&lt;head&lt;要素を検出した場合はtrueです。"
+    "hash": "b3e5777a8d1c6556",
+    "en": "True if the &lt;head&gt; element has been seen.",
+    "ja": "&lt;head&gt;要素を検出した場合はtrueです。"
   },
   "net.zamasoft.balancer.TagBalancer#fSeenRootElement": {
     "hash": "b0fc6add8a5f144e",
