@@ -21,6 +21,11 @@ import org.xml.sax.helpers.DefaultHandler;
  * unclosed {@code ul}/{@code li} (and disappeared with a {@code display: none} on the list: the table of contents of
  * wordpress.org).
  * </p>
+ *
+ * <p>
+ * Also table rows whose cells are not closed (one {@code tbody} per row until 2026-10-09: html-entities, textfiles,
+ * whatwg-tables) and options inside an {@code optgroup} (they used to close the group: rails-guides).
+ * </p>
  */
 class TagBalancerTest {
 	/** Serializes the body content: lower-case names, attributes in source order, text as is. */
@@ -86,6 +91,20 @@ class TagBalancerTest {
 			<div><p>a<figure>f</figure>b</div> | <div><p>a</p><figure>f</figure>b</div>
 			<p>a<article>b<header>h</header></article> | <p>a</p><article>b<header>h</header></article>
 			<button><p>a<section>b</section></button> | <button><p>a</p><section>b</section></button>
+			# A tr in an open cell closes the cell and the row, not the row group ("in cell" mode; one tbody per row until 2026-10-09)
+			<table><tr><td>a<tr><td>b</table> | <table><tbody><tr><td>a</td></tr><tr><td>b</td></tr></tbody></table>
+			<table><tbody><tr><td>a <span>x</span> <tr><td>b</table> | <table><tbody><tr><td>a <span>x</span> </td></tr><tr><td>b</td></tr></tbody></table>
+			<table><thead><tr><th>N<th>C<tbody><tr id=a><td><code>x</code><td><span>A</span> <tr id=b><td>y</table> | <table><thead><tr><th>N</th><th>C</th></tr></thead><tbody><tr id="a"><td><code>x</code></td><td><span>A</span> </td></tr><tr id="b"><td>y</td></tr></tbody></table>
+			<table><tr><th>a<td>b<tr><th>c</table> | <table><tbody><tr><th>a</th><td>b</td></tr><tr><th>c</th></tr></tbody></table>
+			<table><tr><td><div>a<tr><td>b</table> | <table><tbody><tr><td><div>a</div></td></tr><tr><td>b</td></tr></tbody></table>
+			<table><tr><td><b>x<tr><td>y</table>z | <table><tbody><tr><td><b>x</b></td></tr><tr><td>y</td></tr></tbody></table>z
+			<table><thead><tr><th>h<tbody><tr><td>a<tr><td>b<tfoot><tr><td>f</table> | <table><thead><tr><th>h</th></tr></thead><tbody><tr><td>a</td></tr><tr><td>b</td></tr></tbody><tfoot><tr><td>f</td></tr></tfoot></table>
+			<table><tr><td><table><tr><td>x<tr><td>y</table><tr><td>z</table> | <table><tbody><tr><td><table><tbody><tr><td>x</td></tr><tr><td>y</td></tr></tbody></table></td></tr><tr><td>z</td></tr></tbody></table>
+			# Options go inside an optgroup; an optgroup closes an open option and optgroup ("in select" mode)
+			<select><option>i</option><optgroup label=g><option>a</option><option>b</option></optgroup><optgroup label=h><option>c</option></optgroup></select> | <select><option>i</option><optgroup label="g"><option>a</option><option>b</option></optgroup><optgroup label="h"><option>c</option></optgroup></select>
+			<select><optgroup label=g><option>a<option>b<optgroup label=h><option>c</select> | <select><optgroup label="g"><option>a</option><option>b</option></optgroup><optgroup label="h"><option>c</option></optgroup></select>
+			<select><option>a<optgroup label=g><option>b</optgroup><option>c</select> | <select><option>a</option><optgroup label="g"><option>b</option></optgroup><option>c</option></select>
+			<select><optgroup label=g><option>a</optgroup><optgroup label=h></select> | <select><optgroup label="g"><option>a</option></optgroup><optgroup label="h"></optgroup></select>
 			""")
 	void sameTreeAsChrome(final String html, final String chrome) throws Exception {
 		assertEquals(chrome, body(html));

@@ -1015,12 +1015,14 @@
 		</discardsClose>
 	</tag>
 
+	<!-- An optgroup closes an open option and optgroup (the HTML Standard's "in select" mode), and an option goes
+	     inside the optgroup (2026-10-09; options used to close the group and land after it). -->
 	<tag name="OPTGROUP">
 		<digsFor>
-			OPTION,SELECT
+			SELECT
 		</digsFor>
 		<discardsOpen>
-			$ignore
+			$ignore,-OPTION
 		</discardsOpen>
 	</tag>
 
@@ -1029,7 +1031,7 @@
 			OPTION
 		</openCloses>
 		<digsFor>
-			OPTION,SELECT
+			OPTION,OPTGROUP,SELECT
 		</digsFor>
 		<discardsOpen>
 			$ignore,-OPTGROUP,-OPTION
@@ -1379,9 +1381,12 @@
 		</discardsOpen>
 	</tag>
 
+	<!-- A tr in an open cell closes the cell and the row and stays in the row group (the HTML Standard's "in cell"
+	     mode). With $cell here the open cell stopped the search for the row, and inserting the missing row group
+	     closed the table body: one tbody per row (2026-10-09). -->
 	<tag name="TR">
 		<digsFor>
-			TABLE,$rows,TR,$cell
+			TABLE,$rows,TR
 		</digsFor>
 		<insertParents>
 			$rows
