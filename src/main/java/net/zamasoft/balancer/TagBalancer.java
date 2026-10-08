@@ -155,6 +155,18 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 	/** True if the &lt;body&gt; element has been seen. */
 	protected boolean fSeenBodyElement;
 
+	/**
+	 * Quirks mode, as the HTML Standard derives it from the doctype (none, or a legacy one it lists). Only there does
+	 * a table start tag leave an open p open (2026-10-09).
+	 */
+	private boolean fQuirks;
+
+	/**
+	 * The HTML Standard's form element pointer: the last form started, until a form end tag clears it (2026-10-09).
+	 * A form start tag is ignored while it is set, even after the form was closed by other end tags.
+	 */
+	private Info fFormPointer;
+
 	// temp vars
 
 	private XNIRecorder fRecorder = new XNIRecorder();
@@ -276,6 +288,8 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 		this.fSeenRootElement = false;
 		this.fSeenHeadElement = false;
 		this.fSeenBodyElement = false;
+		this.fQuirks = true;
+		this.fFormPointer = null;
 		if (!this.fDocumentFragment) {
 			this.fRecorder.mark();
 		}
@@ -298,6 +312,7 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 		this.fSeenAnything = true;
 		if (!this.fSeenRootElement && !this.fSeenDoctype) {
 			this.fSeenDoctype = true;
+			this.fQuirks = isQuirksDoctype(rootElementName, publicId, systemId);
 			this.fDocumentHandler.getDocumentHandler().doctypeDecl(rootElementName, publicId, systemId, augs);
 		}
 	} // doctypeDecl(String,String,String,Augmentations)
@@ -441,6 +456,17 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 					return;
 				}
 			}
+			this.closeRemovedForms();
+			if (prop.code == HTMLElements.FORM && this.fFormPointer != null) {
+				// "in body": a form start tag is ignored while the form element pointer is set, also when that
+				// form was closed by an end tag other than </form> (lwn.net: its login form went into the comment
+				// form left open in an earlier copy of the page, so Chrome has no form around the fields).
+				return;
+			}
+			if (prop.code == HTMLElements.TABLE && !this.fQuirks) {
+				// Outside quirks mode a table closes an open p ("close a p element"; w3c.org/Style/Examples).
+				this.closeParagraphInButtonScope();
+			}
 
 			if (prop.contains(ElementProps.SET_DIGS_FOR)) {
 				// Unwind the ancestor stack until the required parent is reached
@@ -540,7 +566,11 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 			}
 			this.fDocumentHandler.emptyElement(element, attrs, augs);
 		} else {
-			this.fElementStack.push(new Info(prop, element, attrs));
+			final Info info = new Info(prop, element, attrs);
+			this.fElementStack.push(info);
+			if (prop.code == HTMLElements.FORM) {
+				this.fFormPointer = info;
+			}
 			if (attrs == null) {
 				attrs = this.emptyAttributes();
 			}
@@ -611,6 +641,7 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 		this.fSeenAnything = true;
 
 		// Check the parent element
+		this.closeRemovedForms();
 		if (this.fElementStack.top >= 1) {
 			Info parent = this.fElementStack.peek();
 			// Insert the required parent
@@ -694,6 +725,12 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 				}
 				return;
 			}
+		}
+
+		this.closeRemovedForms();
+		if (prop.code == HTMLElements.FORM) {
+			this.endForm();
+			return;
 		}
 
 		// Find the matching start tag
@@ -781,6 +818,14 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 				// so after "<div><ul class=x><li>a</div><p>b" the paragraph went into a new ul.x/li (and vanished
 				// with a "display: none" on .x, the wordpress.org table of contents).
 				continue;
+			}
+			if (info.removed) {
+				// A form a </form> took off the stack: it is not open any more
+				continue;
+			}
+			if (info == this.fFormPointer) {
+				// The reopened copy becomes the form element pointer
+				this.fFormPointer = null;
 			}
 			if (continueTags == null) {
 				continueTags = new ArrayList<Info>();
@@ -951,6 +996,167 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 		default:
 			return true;
 		}
+	}
+
+	/**
+	 * A form end tag, as the HTML Standard's "in body" mode handles it (2026-10-09): it clears the form element
+	 * pointer and, when that form is in scope, pops the elements with implied end tags (p, li, option ...) and takes
+	 * the form off the stack. Elements still open inside it stay open, and what follows goes into them, inside the
+	 * form (un.org: the "A-Z Site Index" after "&lt;form&gt;&lt;div&gt;&lt;div&gt;...&lt;/form&gt;"). The form
+	 * stays on this stack, marked removed, until they are closed ({@link #closeRemovedForms()}).
+	 */
+	private void endForm() {
+		final Info node = this.fFormPointer;
+		this.fFormPointer = null;
+		if (node == null) {
+			return;
+		}
+		int index = -1;
+		for (int i = this.fElementStack.top - 1; i >= 0; --i) {
+			final Info info = this.fElementStack.data[i];
+			if (info == node) {
+				index = i;
+				break;
+			}
+			if (isScopeMarker(info.prop.code)) {
+				return;
+			}
+		}
+		if (index < 0) {
+			return;
+		}
+		while (this.fElementStack.top - 1 > index && hasImpliedEndTag(this.fElementStack.peek().prop.code)) {
+			final Info info = this.fElementStack.pop();
+			this.callEndElement(info.qname, null);
+		}
+		if (this.fElementStack.top - 1 == index) {
+			final Info info = this.fElementStack.pop();
+			this.callEndElement(info.qname, null);
+		} else {
+			node.removed = true;
+		}
+	}
+
+	/**
+	 * Closes the forms a form end tag took off the stack once the elements left open inside them are closed, before
+	 * the next content goes in.
+	 */
+	private void closeRemovedForms() {
+		while (this.fElementStack.top > 0 && this.fElementStack.peek().removed) {
+			final Info info = this.fElementStack.pop();
+			this.callEndElement(info.qname, null);
+		}
+	}
+
+	/** "Close a p element" when one is in button scope: pops it and every element opened inside it. */
+	private void closeParagraphInButtonScope() {
+		for (int i = this.fElementStack.top - 1; i >= 0; --i) {
+			final short code = this.fElementStack.data[i].prop.code;
+			if (code == HTMLElements.P) {
+				while (this.fElementStack.top > i) {
+					final Info info = this.fElementStack.pop();
+					this.callEndElement(info.qname, null);
+				}
+				return;
+			}
+			if (code == HTMLElements.BUTTON || isScopeMarker(code)) {
+				return;
+			}
+		}
+	}
+
+	/** The elements that end the HTML Standard's default scope ("has an element in scope"). */
+	private static boolean isScopeMarker(final short code) {
+		switch (code) {
+		case HTMLElements.APPLET:
+		case HTMLElements.CAPTION:
+		case HTMLElements.HTML:
+		case HTMLElements.TABLE:
+		case HTMLElements.TD:
+		case HTMLElements.TH:
+		case HTMLElements.MARQUEE:
+		case HTMLElements.OBJECT:
+		case HTMLElements.TEMPLATE:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	/** The elements "generate implied end tags" pops. */
+	private static boolean hasImpliedEndTag(final short code) {
+		switch (code) {
+		case HTMLElements.DD:
+		case HTMLElements.DT:
+		case HTMLElements.LI:
+		case HTMLElements.OPTGROUP:
+		case HTMLElements.OPTION:
+		case HTMLElements.P:
+		case HTMLElements.RB:
+		case HTMLElements.RP:
+		case HTMLElements.RT:
+		case HTMLElements.RTC:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	/**
+	 * Public identifiers that put a document in quirks mode (HTML Standard, "The initial insertion mode"), lower
+	 * case; the ones that start with these.
+	 */
+	private static final String[] QUIRKS_PUBLIC_PREFIXES = { "+//silmaril//dtd html pro v0r11 19970101//",
+			"-//as//dtd html 3.0 aswedit + extensions//", "-//advasoft ltd//dtd html 3.0 aswedit + extensions//",
+			"-//ietf//dtd html 2.0 level 1//", "-//ietf//dtd html 2.0 level 2//", "-//ietf//dtd html 2.0 strict level 1//",
+			"-//ietf//dtd html 2.0 strict level 2//", "-//ietf//dtd html 2.0 strict//", "-//ietf//dtd html 2.0//",
+			"-//ietf//dtd html 2.1e//", "-//ietf//dtd html 3.0//", "-//ietf//dtd html 3.2 final//",
+			"-//ietf//dtd html 3.2//", "-//ietf//dtd html 3//", "-//ietf//dtd html level 0//",
+			"-//ietf//dtd html level 1//", "-//ietf//dtd html level 2//", "-//ietf//dtd html level 3//",
+			"-//ietf//dtd html strict level 0//", "-//ietf//dtd html strict level 1//",
+			"-//ietf//dtd html strict level 2//", "-//ietf//dtd html strict level 3//", "-//ietf//dtd html strict//",
+			"-//ietf//dtd html//", "-//metrius//dtd metrius presentational//",
+			"-//microsoft//dtd internet explorer 2.0 html strict//", "-//microsoft//dtd internet explorer 2.0 html//",
+			"-//microsoft//dtd internet explorer 2.0 tables//", "-//microsoft//dtd internet explorer 3.0 html strict//",
+			"-//microsoft//dtd internet explorer 3.0 html//", "-//microsoft//dtd internet explorer 3.0 tables//",
+			"-//netscape comm. corp.//dtd html//", "-//netscape comm. corp.//dtd strict html//",
+			"-//o'reilly and associates//dtd html 2.0//", "-//o'reilly and associates//dtd html extended 1.0//",
+			"-//o'reilly and associates//dtd html extended relaxed 1.0//",
+			"-//sq//dtd html 2.0 hotmetal + extensions//",
+			"-//softquad software//dtd hotmetal pro 6.0::19990601::extensions to html 4.0//",
+			"-//softquad//dtd hotmetal pro 4.0::19971010::extensions to html 4.0//",
+			"-//spyglass//dtd html 2.0 extended//", "-//sun microsystems corp.//dtd hotjava html//",
+			"-//sun microsystems corp.//dtd hotjava strict html//", "-//w3c//dtd html 3 1995-03-24//",
+			"-//w3c//dtd html 3.2 draft//", "-//w3c//dtd html 3.2 final//", "-//w3c//dtd html 3.2//",
+			"-//w3c//dtd html 3.2s draft//", "-//w3c//dtd html 4.0 frameset//", "-//w3c//dtd html 4.0 transitional//",
+			"-//w3c//dtd html experimental 19960712//", "-//w3c//dtd html experimental 970421//",
+			"-//w3c//dtd w3 html//", "-//w3o//dtd w3 html 3.0//", "-//webtechs//dtd mozilla html 2.0//",
+			"-//webtechs//dtd mozilla html//" };
+
+	/** Whether a doctype puts the document in quirks mode (HTML Standard, "The initial insertion mode"). */
+	private static boolean isQuirksDoctype(final String name, final String publicId, final String systemId) {
+		if (name == null || !name.equalsIgnoreCase("html")) {
+			return true;
+		}
+		final String pub = publicId == null ? null : publicId.toLowerCase(java.util.Locale.ROOT);
+		final String sys = systemId == null ? null : systemId.toLowerCase(java.util.Locale.ROOT);
+		if ("http://www.ibm.com/data/dtd/v11/ibmxhtml1-transitional.dtd".equals(sys)) {
+			return true;
+		}
+		if (pub == null) {
+			return false;
+		}
+		if (pub.equals("-//w3o//dtd w3 html strict 3.0//en//") || pub.equals("-/w3c/dtd html 4.0 transitional/en")
+				|| pub.equals("html")) {
+			return true;
+		}
+		for (final String prefix : QUIRKS_PUBLIC_PREFIXES) {
+			if (pub.startsWith(prefix)) {
+				return true;
+			}
+		}
+		return sys == null && (pub.startsWith("-//w3c//dtd html 4.01 frameset//")
+				|| pub.startsWith("-//w3c//dtd html 4.01 transitional//"));
 	}
 
 	/** Returns a set of empty attributes. */

@@ -354,10 +354,15 @@
 		<discardsClose>$dl</discardsClose>
 	</tag>
 
+	<!-- A col directly in a table goes into an implied colgroup, as in the HTML Standard's "in table" mode
+	     (2026-10-09; w3.org/Style/Examples). -->
 	<tag name="COL" flags="EMPTY">
 		<digsFor>
 			TABLE,COLGROUP,TR,$cell
 		</digsFor>
+		<insertParents>
+			COLGROUP
+		</insertParents>
 		<openCloses>
 			$rows
 		</openCloses>
@@ -366,12 +371,14 @@
 		</discardsOpen>
 	</tag>
 
+	<!-- A colgroup closes an open colgroup ("in column group" mode; w3.org's specs write "<colgroup span=1>"
+	     without end tags, 2026-10-09). -->
 	<tag name="COLGROUP" flags="CLOSE_BY_TEXT">
 		<digsFor>
 			TABLE,COLGROUP,TR,$cell
 		</digsFor>
 		<openCloses>
-			$rows
+			$rows,COLGROUP
 		</openCloses>
 		<discardsOpen>
 			$ignore,-COL,-COLGROUP
@@ -939,12 +946,14 @@
 		</discardsClose>
 	</tag>
 
+	<!-- An optgroup closes an open option and optgroup (the HTML Standard's "in select" mode), and an option goes
+	     inside the optgroup (2026-10-09; options used to close the group and land after it). -->
 	<tag name="OPTGROUP">
 		<digsFor>
-			OPTION,SELECT
+			SELECT
 		</digsFor>
 		<discardsOpen>
-			$ignore
+			$ignore,-OPTION
 		</discardsOpen>
 	</tag>
 
@@ -953,7 +962,7 @@
 			OPTION
 		</openCloses>
 		<digsFor>
-			OPTION,SELECT
+			OPTION,OPTGROUP,SELECT
 		</digsFor>
 		<discardsOpen>
 			$ignore,-OPTGROUP,-OPTION
@@ -1303,9 +1312,12 @@
 		</discardsOpen>
 	</tag>
 
+	<!-- A tr in an open cell closes the cell and the row and stays in the row group (the HTML Standard's "in cell"
+	     mode). With $cell here the open cell stopped the search for the row, and inserting the missing row group
+	     closed the table body: one tbody per row (2026-10-09). -->
 	<tag name="TR">
 		<digsFor>
-			TABLE,$rows,TR,$cell
+			TABLE,$rows,TR
 		</digsFor>
 		<insertParents>
 			$rows
@@ -1706,9 +1718,10 @@
 		<discardsClose>$dl</discardsClose>
 	</tag>
 
+	<!-- The options of a datalist are kept (they used to be dropped, 2026-10-09). -->
 	<tag name="DATALIST">
 		<discardsOpen>
-			$ignore
+			$ignore,-OPTION
 		</discardsOpen>
 		<stopCloseBy>
 			CAPTION,$cell

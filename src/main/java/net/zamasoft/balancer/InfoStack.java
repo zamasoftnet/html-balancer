@@ -36,6 +36,12 @@ class Info {
 	/** The element attributes. */
 	public final XMLAttributes atts;
 
+	/**
+	 * A form a form end tag took off the HTML Standard's stack of open elements while elements inside it were still
+	 * open: it is closed as soon as they are (2026-10-09).
+	 */
+	public boolean removed;
+
 	//
 	// Constructors
 	//

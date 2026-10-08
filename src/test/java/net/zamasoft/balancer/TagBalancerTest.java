@@ -24,15 +24,43 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * <p>
  * Also table rows whose cells are not closed (one {@code tbody} per row until 2026-10-09: html-entities, textfiles,
- * whatwg-tables) and options inside an {@code optgroup} (they used to close the group: rails-guides).
+ * whatwg-tables) and options inside an {@code optgroup} (they used to close the group: rails-guides), the form end
+ * tag and the form element pointer (un.org, lwn.net), tables that close a p outside quirks mode, implied colgroups
+ * (w3.org) and the options of a datalist.
+ * Each case is checked with legacy.xml, with html4.xml, and with legacy.xml switched to html4.xml at the body start
+ * tag, as foliojet does for documents in standards mode.
  * </p>
  */
 class TagBalancerTest {
-	/** Serializes the body content: lower-case names, attributes in source order, text as is. */
-	private static String body(final String html) throws Exception {
+	/** Elements innerHTML writes without an end tag. */
+	private static final java.util.Set<String> VOID = java.util.Set.of("area", "base", "br", "col", "embed", "hr",
+			"img", "input", "link", "meta", "param", "source", "track", "wbr");
+
+	/**
+	 * Serializes the body content with the nesting rules of {@code config} (legacy.xml, or html4.xml that foliojet
+	 * switches to in standards mode): lower-case names, attributes in source order, text as is. "legacy.xml&gt;html4.xml"
+	 * switches at the body start tag, as foliojet's ForeignContentFilter does.
+	 */
+	private static String body(final String doctype, final String html, final String config) throws Exception {
 		final StringBuilder out = new StringBuilder();
 		final boolean[] inBody = { false };
 		final SAXParser parser = new SAXParser();
+		final TagBalancer balancer = new TagBalancer();
+		final String[] configs = config.split(">");
+		balancer.setElementProps(ElementProps.getElementProps(configs[0]));
+		final org.htmlunit.cyberneko.filters.DefaultFilter switcher = new org.htmlunit.cyberneko.filters.DefaultFilter() {
+			@Override
+			public void startElement(final org.htmlunit.cyberneko.xerces.xni.QName element,
+					final org.htmlunit.cyberneko.xerces.xni.XMLAttributes atts,
+					final org.htmlunit.cyberneko.xerces.xni.Augmentations augs) {
+				super.startElement(element, atts, augs);
+				if (configs.length > 1 && element.getLocalpart().equalsIgnoreCase("body")) {
+					balancer.setElementProps(ElementProps.getElementProps(configs[1]));
+				}
+			}
+		};
+		parser.setProperty("http://cyberneko.org/html/properties/filters",
+				new org.htmlunit.cyberneko.xerces.xni.parser.XMLDocumentFilter[] { balancer, switcher });
 		parser.setContentHandler(new DefaultHandler() {
 			@Override
 			public void startElement(final String uri, final String local, final String qName, final Attributes atts) {
@@ -54,7 +82,7 @@ class TagBalancerTest {
 				final String name = qName.toLowerCase();
 				if (name.equals("body")) {
 					inBody[0] = false;
-				} else if (inBody[0]) {
+				} else if (inBody[0] && !VOID.contains(name)) {
 					out.append("</").append(name).append('>');
 				}
 			}
@@ -67,7 +95,7 @@ class TagBalancerTest {
 			}
 		});
 		parser.parse(new InputSource(
-				new StringReader("<!DOCTYPE html><html><head></head><body>" + html + "</body></html>")));
+				new StringReader(doctype + "<html><head></head><body>" + html + "</body></html>")));
 		return out.toString();
 	}
 
@@ -105,8 +133,49 @@ class TagBalancerTest {
 			<select><optgroup label=g><option>a<option>b<optgroup label=h><option>c</select> | <select><optgroup label="g"><option>a</option><option>b</option></optgroup><optgroup label="h"><option>c</option></optgroup></select>
 			<select><option>a<optgroup label=g><option>b</optgroup><option>c</select> | <select><option>a</option><optgroup label="g"><option>b</option></optgroup><option>c</option></select>
 			<select><optgroup label=g><option>a</optgroup><optgroup label=h></select> | <select><optgroup label="g"><option>a</option></optgroup><optgroup label="h"></optgroup></select>
+			# </form> takes the form off the stack and leaves the elements open in it open (un.org's search form)
+			<section><form><div><div><h2>t</h2><div>x</div></form><div class=a>y</div></section>z | <section><form><div><div><h2>t</h2><div>x</div><div class="a">y</div></div></div></form></section>z
+			<div><form><p>a</form>b</div> | <div><form><p>a</p></form>b</div>
+			<div><form><span>a</form>b</span>c</div> | <div><form><span>ab</span></form>c</div>
+			<form><div>a</form><form><div>b</div></form>c | <form><div>a<form><div>b</div></form>c</div></form>
+			# A form start tag is ignored while the form element pointer is set (lwn.net); a form in a table is empty
+			<div><form id=c><input> text <p></div><div><form id=l><label>u<input></label></form><form id=s><input></form></div> | <div><form id="c"><input> text <p></p></form></div><div><label>u<input></label><form id="s"><input></form></div>
+			<form id=a><table><tr><td></form>x</td></tr></table>y</form>z | <form id="a"><table><tbody><tr><td>x</td></tr></tbody></table>yz</form>
+			<table><form><tr><td>a</td></tr></form></table> | <table><form></form><tbody><tr><td>a</td></tr></tbody></table>
+			# Outside quirks mode a table closes an open p
+			<p>a<table><tr><td>b</table>c | <p>a</p><table><tbody><tr><td>b</td></tr></tbody></table>c
+			<p>a<span>s<table><tr><td>b</table>c | <p>a<span>s</span></p><table><tbody><tr><td>b</td></tr></tbody></table>c
+			# A col goes into an implied colgroup; a colgroup closes an open one (w3.org)
+			<table><col><col><tr><td>a</table> | <table><colgroup><col><col></colgroup><tbody><tr><td>a</td></tr></tbody></table>
+			<table><colgroup><col></colgroup><col><tr><td>a</table> | <table><colgroup><col></colgroup><colgroup><col></colgroup><tbody><tr><td>a</td></tr></tbody></table>
+			<table><col span=2><thead><tr><th>h</table> | <table><colgroup><col span="2"></colgroup><thead><tr><th>h</th></tr></thead></table>
+			<table><colgroup span=1><colgroup span=3><colgroup span=3><thead><tr><th>h</table> | <table><colgroup span="1"></colgroup><colgroup span="3"></colgroup><colgroup span="3"></colgroup><thead><tr><th>h</th></tr></thead></table>
+			# The options of a datalist are kept
+			<datalist id=x><option value=a><option value=b></datalist>z | <datalist id="x"><option value="a"></option><option value="b"></option></datalist>z
 			""")
 	void sameTreeAsChrome(final String html, final String chrome) throws Exception {
-		assertEquals(chrome, body(html));
+		assertEquals(chrome, body("<!DOCTYPE html>", html, "legacy.xml"), "legacy.xml");
+		assertEquals(chrome, body("<!DOCTYPE html>", html, "html4.xml"), "html4.xml");
+		assertEquals(chrome, body("<!DOCTYPE html>", html, "legacy.xml>html4.xml"), "legacy.xml, html4.xml from body");
+	}
+
+	/**
+	 * Only in quirks mode does a table leave an open p open. The mode comes from the doctype as the HTML Standard
+	 * derives it (Chrome 151's document.compatMode: BackCompat for none, HTML 4.01 Transitional without a system
+	 * identifier and HTML 3.2). With legacy.xml, the rules foliojet keeps for documents it does not take for
+	 * standards mode; html4.xml always closes the p.
+	 */
+	@ParameterizedTest
+	@CsvSource(delimiter = '|', textBlock = """
+			'' | <p>a<table><tbody><tr><td>b</td></tr></tbody></table>c</p>
+			<!DOCTYPE html> | <p>a</p><table><tbody><tr><td>b</td></tr></tbody></table>c
+			<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"> | <p>a</p><table><tbody><tr><td>b</td></tr></tbody></table>c
+			<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"> | <p>a<table><tbody><tr><td>b</td></tr></tbody></table>c</p>
+			<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> | <p>a</p><table><tbody><tr><td>b</td></tr></tbody></table>c
+			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> | <p>a</p><table><tbody><tr><td>b</td></tr></tbody></table>c
+			<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN"> | <p>a<table><tbody><tr><td>b</td></tr></tbody></table>c</p>
+			""")
+	void tableClosesParagraphOutsideQuirksMode(final String doctype, final String chrome) throws Exception {
+		assertEquals(chrome, body(doctype, "<p>a<table><tr><td>b</table>c", "legacy.xml"));
 	}
 }
