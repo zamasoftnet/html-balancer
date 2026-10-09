@@ -176,6 +176,9 @@ class TagBalancerTest {
 			<div><p>a</p></body></html><p>b</p> | <div><p>a</p><p>b</p></div>
 			<p>a</body><p>b | <p>a</p><p>b</p>
 			<p>a</p></body></html><head><title>t</title></head><body class=y><p>b</p></body></html> | <p>a</p><title>t</title><p>b</p>
+			# A line feed right after the start tag of a textarea is dropped (the scanner drops it after a pre)
+			<textarea>&#10;x</textarea>y | <textarea>x</textarea>y
+			<textarea>&#10;</textarea>y | <textarea></textarea>y
 			# Content directly in a table, a row group or a row goes before the table (foster parenting); white space, hidden
 			# inputs, style and script stay; a table start tag closes an open table (021-FLOAT_IN_TABLE)
 			<table><tr><td>a</td></tr><img src=x align=left><tr><td>b</td></tr></table> | <img src="x" align="left"><table><tbody><tr><td>a</td></tr><tr><td>b</td></tr></tbody></table>

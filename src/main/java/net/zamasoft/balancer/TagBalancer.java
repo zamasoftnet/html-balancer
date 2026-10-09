@@ -599,6 +599,7 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 			final Info info = new Info(prop, element, attrs);
 			info.startOut = out;
 			info.contentOut = out;
+			info.dropsLineFeed = prop.code == HTMLElements.TEXTAREA;
 			if (prop.code == HTMLElements.TABLE) {
 				info.buffer = new TableBuffer(out == null ? this.fDocumentHandler : out, this.fLocator);
 				info.contentOut = info.buffer;
@@ -681,7 +682,16 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 	} // endCDATA(Augmentations)
 
 	/** Characters. */
-	public void characters(final XMLString text, final Augmentations augs) throws XNIException {
+	public void characters(XMLString text, final Augmentations augs) throws XNIException {
+		if (this.fElementStack.top >= 1 && this.fElementStack.peek().dropsLineFeed) {
+			this.fElementStack.peek().dropsLineFeed = false;
+			if (text.length() > 0 && text.charAt(0) == '\n') {
+				if (text.length() == 1) {
+					return;
+				}
+				text = new XMLString(text.toString().substring(1));
+			}
+		}
 		if (!this.fDocumentFragment) {
 			// handle bare characters
 			if (!this.fSeenAnything) {

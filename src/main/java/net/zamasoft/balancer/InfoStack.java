@@ -55,6 +55,12 @@ class Info {
 	/** The buffer that holds back a table until its end. */
 	TableBuffer buffer;
 
+	/**
+	 * A textarea whose content has not started: a line feed that starts it is dropped, as the HTML Standard's parser
+	 * does after the start tag (2026-10-09; the scanner does it for pre and listing).
+	 */
+	boolean dropsLineFeed;
+
 	//
 	// Constructors
 	//
