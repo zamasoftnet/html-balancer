@@ -5,6 +5,7 @@ import net.zamasoft.balancer.ElementProps.ElementProp;
 import org.htmlunit.cyberneko.xerces.util.XMLAttributesImpl;
 import org.htmlunit.cyberneko.xerces.xni.QName;
 import org.htmlunit.cyberneko.xerces.xni.XMLAttributes;
+import org.htmlunit.cyberneko.xerces.xni.XMLDocumentHandler;
 
 /**
  * Element info for each start element. This information is used when closing
@@ -41,6 +42,18 @@ class Info {
 	 * open: it is closed as soon as they are (2026-10-09).
 	 */
 	public boolean removed;
+
+	/**
+	 * Where the start and end tags of this element went, or null for the document handler (2026-10-09). An element
+	 * taken out of a table (foster parenting) goes where the table goes, before it.
+	 */
+	XMLDocumentHandler startOut;
+
+	/** Where the content of this element goes, or null for the document handler: a table's own buffer for a table. */
+	XMLDocumentHandler contentOut;
+
+	/** The buffer that holds back a table until its end. */
+	TableBuffer buffer;
 
 	//
 	// Constructors

@@ -284,6 +284,11 @@
     "en": "Returns the default state for a feature.",
     "ja": "フィーチャのデフォルトの状態を返します。"
   },
+  "net.zamasoft.balancer.TagBalancer#getLocator()": {
+    "hash": "1da280e0d5eb5202",
+    "en": "Returns the locator this balancer hands on with the start of the document: the scanner's, except that the events\nof a table it held back report the positions they were read at (2026-10-09). Handlers after the balancer that take\nsource positions from the locator at each event should use this one.\n\n@return the locator, or null before the document starts",
+    "ja": "このバランサが文書の開始とともに渡すロケータを返します。字句解析器のロケータですが、表の中で後回しにしたイベントでは、読んだときの位置を報告します(2026-10-09)。バランサより後ろで、イベントごとにロケータからソースの位置を取るハンドラは、こちらを使います。\n\n@return ロケータ。文書の開始前はnull"
+  },
   "net.zamasoft.balancer.TagBalancer#getNamesValue(String)": {
     "hash": "220f1d5f38e34ef1",
     "en": "Converts HTML names string value to constant value.\n\n@see #NAMES_NO_CHANGE\n@see #NAMES_LOWERCASE\n@see #NAMES_UPPERCASE",

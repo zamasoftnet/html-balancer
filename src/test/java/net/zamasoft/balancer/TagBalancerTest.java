@@ -27,8 +27,9 @@ import org.xml.sax.helpers.DefaultHandler;
  * whatwg-tables) and options inside an {@code optgroup} (they used to close the group: rails-guides), the form end
  * tag and the form element pointer (un.org, lwn.net), tables that close a p outside quirks mode, implied colgroups
  * (w3.org), the options of a datalist, content after the body end tag, form controls and labels inside a button
- * (pmc.ncbi.nlm.nih.gov), and block start tags that leave code, label and other phrasing elements open (react.dev,
- * docusaurus.io).
+ * (pmc.ncbi.nlm.nih.gov), block start tags that leave code, label and other phrasing elements open (react.dev,
+ * docusaurus.io), and content directly in a table, a row group or a row, which goes before the table (foster
+ * parenting: the floated images between the rows of 021-FLOAT_IN_TABLE).
  * Each case is checked with legacy.xml, with html4.xml, and with legacy.xml switched to html4.xml at the body start
  * tag, as foliojet does for documents in standards mode.
  * </p>
@@ -175,6 +176,33 @@ class TagBalancerTest {
 			<div><p>a</p></body></html><p>b</p> | <div><p>a</p><p>b</p></div>
 			<p>a</body><p>b | <p>a</p><p>b</p>
 			<p>a</p></body></html><head><title>t</title></head><body class=y><p>b</p></body></html> | <p>a</p><title>t</title><p>b</p>
+			# Content directly in a table, a row group or a row goes before the table (foster parenting); white space, hidden
+			# inputs, style and script stay; a table start tag closes an open table (021-FLOAT_IN_TABLE)
+			<table><tr><td>a</td></tr><img src=x align=left><tr><td>b</td></tr></table> | <img src="x" align="left"><table><tbody><tr><td>a</td></tr><tr><td>b</td></tr></tbody></table>
+			<table>x<tr><td>a</td></tr></table> | x<table><tbody><tr><td>a</td></tr></tbody></table>
+			<table><tr><td>a</td></tr>x<tr><td>b</td></tr></table> | x<table><tbody><tr><td>a</td></tr><tr><td>b</td></tr></tbody></table>
+			<table><tbody><tr><td>a</td></tr>x</tbody></table> | x<table><tbody><tr><td>a</td></tr></tbody></table>
+			<table><tr>x<td>a</td></tr></table> | x<table><tbody><tr><td>a</td></tr></tbody></table>
+			<table><div>d<span>s</span></div><tr><td>a</table> | <div>d<span>s</span></div><table><tbody><tr><td>a</td></tr></tbody></table>
+			<table><div>d<tr><td>a</table> | <div>d</div><table><tbody><tr><td>a</td></tr></tbody></table>
+			<table><tr><td><table><tr><td>x</td></tr>y<tr><td>z</td></tr></table></td></tr></table> | <table><tbody><tr><td>y<table><tbody><tr><td>x</td></tr><tr><td>z</td></tr></tbody></table></td></tr></tbody></table>
+			<table> <tr><td>a</td></tr> </table> | <table> <tbody><tr><td>a</td></tr> </tbody></table>
+			<table> x <tr><td>a</td></tr></table> | ' x <table><tbody><tr><td>a</td></tr></tbody></table>'
+			# ... also text of no-break or ideographic spaces (only ASCII white space stays in a table)
+			<table>\u3000<tr><td>a</td></tr></table> | '\u3000<table><tbody><tr><td>a</td></tr></tbody></table>'
+			<table><tr><td>a</td></tr>&nbsp;<tr><td>b</td></tr></table> | \u00a0<table><tbody><tr><td>a</td></tr><tr><td>b</td></tr></tbody></table>
+			<table><input type=hidden name=h><tr><td>a</table> | <table><input type="hidden" name="h"><tbody><tr><td>a</td></tr></tbody></table>
+			<table><input type=text name=t><tr><td>a</table> | <input type="text" name="t"><table><tbody><tr><td>a</td></tr></tbody></table>
+			<table><style>td{}</style><script>var a;</script><tr><td>a</table> | <table><style>td{}</style><script>var a;</script><tbody><tr><td>a</td></tr></tbody></table>
+			<table><caption>c</caption>x<tr><td>a</table> | x<table><caption>c</caption><tbody><tr><td>a</td></tr></tbody></table>
+			<table><tr><td>a</td></tr><p>p1<tr><td>b</table> | <p>p1</p><table><tbody><tr><td>a</td></tr><tr><td>b</td></tr></tbody></table>
+			<div><table><tr><td>a</td></tr><img src=x></table>after</div> | <div><img src="x"><table><tbody><tr><td>a</td></tr></tbody></table>after</div>
+			<table><colgroup><col></colgroup>x<tr><td>a</table> | x<table><colgroup><col></colgroup><tbody><tr><td>a</td></tr></tbody></table>
+			<table><thead><tr><th>h</th></tr>x</thead><tbody><tr><td>a</td></tr></tbody></table> | x<table><thead><tr><th>h</th></tr></thead><tbody><tr><td>a</td></tr></tbody></table>
+			<table><tr><td>a</td></tr><select><option>o</select><tr><td>b</table> | <select><option>o</option></select><table><tbody><tr><td>a</td></tr><tr><td>b</td></tr></tbody></table>
+			<table><tr><td>a</td></tr><a href=#>link</a><tr><td>b</table> | <a href="#">link</a><table><tbody><tr><td>a</td></tr><tr><td>b</td></tr></tbody></table>
+			<table><tr><td>a</td></tr><br><tr><td>b</table> | <br><table><tbody><tr><td>a</td></tr><tr><td>b</td></tr></tbody></table>
+			<table><tr><td>a</td></tr><img src=x><img src=y><tr><td>b</td></tr><table><tr><td>c</td></tr><img src=z><tr><td>d</td></tr></table><tr><td>e</td></tr></table> | <img src="x"><img src="y"><table><tbody><tr><td>a</td></tr><tr><td>b</td></tr></tbody></table><img src="z"><table><tbody><tr><td>c</td></tr><tr><td>d</td></tr></tbody></table>e
 			""")
 	void sameTreeAsChrome(final String html, final String chrome) throws Exception {
 		assertEquals(chrome, body("<!DOCTYPE html>", html, "legacy.xml"), "legacy.xml");
@@ -200,5 +228,16 @@ class TagBalancerTest {
 			""")
 	void tableClosesParagraphOutsideQuirksMode(final String doctype, final String chrome) throws Exception {
 		assertEquals(chrome, body(doctype, "<p>a<table><tr><td>b</table>c", "legacy.xml"));
+	}
+
+	/**
+	 * A table is held back only up to TableBuffer.LIMIT characters (2026-10-09): what is taken out of it before that
+	 * goes before it, what comes after stays in place, and the table streams on.
+	 */
+	@org.junit.jupiter.api.Test
+	void largeTableStreamsOn() throws Exception {
+		final String big = "x".repeat((int) TableBuffer.LIMIT + 10);
+		assertEquals("y<table><tbody><tr><td>" + big + "</td></tr><img src=\"a\"><tr><td>b</td></tr></tbody></table>",
+				body("<!DOCTYPE html>", "<table>y<tr><td>" + big + "</td></tr><img src=a><tr><td>b</table>", "legacy.xml"));
 	}
 }
