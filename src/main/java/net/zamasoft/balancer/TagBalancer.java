@@ -171,22 +171,8 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 
 	private XNIRecorder fRecorder = new XNIRecorder();
 
-	/** The locator handed on, which reports the positions of the held-back events of a table (2026-10-09). */
-	private HeldLocator fLocator;
-
 	public TagBalancer() {
 		this.fElementProps = ElementProps.getElementProps("legacy.xml");
-	}
-
-	/**
-	 * Returns the locator this balancer hands on with the start of the document: the scanner's, except that the events
-	 * of a table it held back report the positions they were read at (2026-10-09). Handlers after the balancer that take
-	 * source positions from the locator at each event should use this one.
-	 *
-	 * @return the locator, or null before the document starts
-	 */
-	public XMLLocator getLocator() {
-		return this.fLocator;
 	}
 
 	public void setElementProps(ElementProps props) {
@@ -309,8 +295,7 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 		}
 
 		// pass on event
-		this.fLocator = locator == null ? null : new HeldLocator(locator);
-		this.fDocumentHandler.startDocument(this.fLocator, encoding, nscontext, augs);
+		this.fDocumentHandler.startDocument(locator, encoding, nscontext, augs);
 
 	} // startDocument(XMLLocator,String,Augmentations)
 
@@ -343,7 +328,8 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 		// pop all remaining elements
 		int length = this.fElementStack.top;
 		for (int i = 0; i < length; i++) {
-			this.callEndElement(this.fElementStack.pop());
+			final Info info = this.fElementStack.pop();
+			this.callEndElement(info.qname, null);
 		}
 
 		// call handler
@@ -357,11 +343,6 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 			this.fDocumentHandler.getDocumentHandler().comment(text, augs);
 			return;
 		}
-		final XMLDocumentHandler out = contentOut(this.fElementStack.top >= 1 ? this.fElementStack.peek() : null);
-		if (out != null) {
-			out.comment(text, augs);
-			return;
-		}
 		this.fDocumentHandler.comment(text, augs);
 	} // comment(XMLString,Augmentations)
 
@@ -372,11 +353,7 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 			this.fDocumentHandler.getDocumentHandler().processingInstruction(target, data, augs);
 			return;
 		}
-		final XMLDocumentHandler out = contentOut(this.fElementStack.top >= 1 ? this.fElementStack.peek() : null);
-		if (out != null) {
-			out.processingInstruction(target, data, augs);
-			return;
-		}
+
 		this.fDocumentHandler.processingInstruction(target, data, augs);
 	} // processingInstruction(String,XMLString,Augmentations)
 
@@ -508,7 +485,7 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 				}
 				for (int i = 0; i < close; ++i) {
 					final Info info = this.fElementStack.pop();
-					this.callEndElement(info);
+					this.callEndElement(info.qname, null);
 				}
 			}
 
@@ -538,7 +515,7 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 				}
 				for (int i = 0; i < close; ++i) {
 					final Info info = this.fElementStack.pop();
-					this.callEndElement(info);
+					this.callEndElement(info.qname, null);
 				}
 			}
 		}
@@ -574,7 +551,7 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 					break;
 				}
 				info = this.fElementStack.pop();
-				this.callEndElement(info);
+				this.callEndElement(info.qname, null);
 				if (continueTags == null) {
 					continueTags = new ArrayList<Info>();
 				}
@@ -583,27 +560,14 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 		}
 
 		// call handler
-		final Info parentInfo = this.fElementStack.top >= 1 ? this.fElementStack.peek() : null;
-		final XMLDocumentHandler out = fosters(parentInfo, prop, attrs) ? this.fosterOut()
-				: contentOut(parentInfo);
 		if (prop.is(ElementProps.FLAG_EMPTY)) {
 			if (attrs == null) {
 				attrs = this.emptyAttributes();
 			}
-			if (out == null) {
-				this.fDocumentHandler.emptyElement(element, attrs, augs);
-			} else {
-				out.emptyElement(element, attrs, augs);
-			}
+			this.fDocumentHandler.emptyElement(element, attrs, augs);
 		} else {
 			final Info info = new Info(prop, element, attrs);
-			info.startOut = out;
-			info.contentOut = out;
 			info.dropsLineFeed = prop.code == HTMLElements.TEXTAREA;
-			if (prop.code == HTMLElements.TABLE) {
-				info.buffer = new TableBuffer(out == null ? this.fDocumentHandler : out, this.fLocator);
-				info.contentOut = info.buffer;
-			}
 			this.fElementStack.push(info);
 			if (prop.code == HTMLElements.FORM) {
 				this.fFormPointer = info;
@@ -611,13 +575,7 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 			if (attrs == null) {
 				attrs = this.emptyAttributes();
 			}
-			if (info.buffer != null) {
-				info.buffer.startElement(element, attrs, augs);
-			} else if (out == null) {
-				this.fDocumentHandler.getDocumentHandler().startElement(element, attrs, augs);
-			} else {
-				out.startElement(element, attrs, augs);
-			}
+			this.fDocumentHandler.getDocumentHandler().startElement(element, attrs, augs);
 		}
 
 		if (continueTags != null) {
@@ -654,11 +612,6 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 		}
 
 		// call handler
-		final XMLDocumentHandler out = contentOut(this.fElementStack.top >= 1 ? this.fElementStack.peek() : null);
-		if (out != null) {
-			out.startCDATA(augs);
-			return;
-		}
 		this.fDocumentHandler.startCDATA(augs);
 	} // startCDATA(Augmentations)
 
@@ -673,11 +626,6 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 		}
 
 		// call handler
-		final XMLDocumentHandler out = contentOut(this.fElementStack.top >= 1 ? this.fElementStack.peek() : null);
-		if (out != null) {
-			out.endCDATA(augs);
-			return;
-		}
 		this.fDocumentHandler.endCDATA(augs);
 	} // endCDATA(Augmentations)
 
@@ -722,8 +670,8 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 			}
 			if (parent.prop.is(ElementProps.FLAG_CLOSE_BY_TEXT)) {
 				if (!isWhitespace(text)) {
-					this.callEndElement(this.fElementStack.pop());
-					parent = this.fElementStack.peek();
+					parent = this.fElementStack.pop();
+					this.callEndElement(parent.qname, null);
 				}
 			}
 			if (!this.fSeenBodyElement) {
@@ -741,15 +689,7 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 		}
 
 		// call handler
-		final Info parent = this.fElementStack.top >= 1 ? this.fElementStack.peek() : null;
-		final XMLDocumentHandler out = parent != null && isTableContext(parent.prop.code) && !isAsciiWhitespace(text)
-				? this.fosterOut()
-				: contentOut(parent);
-		if (out == null) {
-			this.fDocumentHandler.characters(text, augs);
-		} else {
-			out.characters(text, augs);
-		}
+		this.fDocumentHandler.characters(text, augs);
 	} // characters(XMLString,Augmentations)
 
 	/** Ignorable whitespace. */
@@ -873,7 +813,7 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 		List<Info> continueTags = null;
 		for (int i = 0; i < close; i++) {
 			final Info info = this.fElementStack.pop();
-			this.callEndElement(info);
+			this.callEndElement(info.qname, null);
 			if (i == close - 1) {
 				break;
 			}
@@ -977,91 +917,6 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 	protected final void callEndElement(QName element, Augmentations augs) throws XNIException {
 		this.fDocumentHandler.endElement(element, augs);
 	} // callEndElement(QName,Augmentations)
-
-	/**
-	 * Ends an element popped off the stack where its start tag went. A table's end tag goes into its buffer, which
-	 * then sends the whole table after what was taken out of it.
-	 */
-	private void callEndElement(final Info info) throws XNIException {
-		if (info.buffer != null) {
-			info.buffer.endElement(info.qname, null);
-			info.buffer.close();
-		} else if (info.startOut != null) {
-			info.startOut.endElement(info.qname, null);
-		} else {
-			this.callEndElement(info.qname, null);
-		}
-	}
-
-	/** Where the content of {@code parent} goes, or null for the document handler. */
-	private static XMLDocumentHandler contentOut(final Info parent) {
-		return parent == null ? null : parent.contentOut;
-	}
-
-	/**
-	 * Where content taken out of the innermost open table goes: where the table goes, before it (the HTML Standard's
-	 * "foster parent"). Null for the document handler.
-	 */
-	private XMLDocumentHandler fosterOut() {
-		for (int i = this.fElementStack.top - 1; i >= 0; --i) {
-			final Info info = this.fElementStack.data[i];
-			if (info.buffer != null) {
-				return info.buffer.parent();
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * A table, a row group, a row or a column group: the elements in which the HTML Standard's "in table" insertion
-	 * modes take other content out of the table (foster parenting).
-	 */
-	private static boolean isTableContext(final short code) {
-		switch (code) {
-		case HTMLElements.TABLE:
-		case HTMLElements.TBODY:
-		case HTMLElements.THEAD:
-		case HTMLElements.TFOOT:
-		case HTMLElements.TR:
-		case HTMLElements.COLGROUP:
-			return true;
-		default:
-			return false;
-		}
-	}
-
-	/**
-	 * Whether an element started in {@code parent} goes before the table instead (foster parenting, 2026-10-09): any
-	 * element in a table context but the table's own parts, a table (which closes the open one), style, script,
-	 * template, form (left empty in the table) and hidden inputs. Until then they stayed in the table, where Copper made
-	 * cells for them (021-FLOAT_IN_TABLE: the floated images between the rows).
-	 */
-	private static boolean fosters(final Info parent, final ElementProp prop, final XMLAttributes attrs) {
-		if (parent == null || !isTableContext(parent.prop.code)) {
-			return false;
-		}
-		switch (prop.code) {
-		case HTMLElements.CAPTION:
-		case HTMLElements.COL:
-		case HTMLElements.COLGROUP:
-		case HTMLElements.TBODY:
-		case HTMLElements.THEAD:
-		case HTMLElements.TFOOT:
-		case HTMLElements.TR:
-		case HTMLElements.TD:
-		case HTMLElements.TH:
-		case HTMLElements.TABLE:
-		case HTMLElements.STYLE:
-		case HTMLElements.SCRIPT:
-		case HTMLElements.TEMPLATE:
-		case HTMLElements.FORM:
-			return false;
-		case HTMLElements.INPUT:
-			return attrs == null || !"hidden".equalsIgnoreCase(attrs.getValue("type"));
-		default:
-			return true;
-		}
-	}
 
 	protected final void directStartElement(final ElementProp prop, final QName element, XMLAttributes attrs,
 			final Augmentations augs) throws XNIException {
@@ -1187,10 +1042,12 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 			return;
 		}
 		while (this.fElementStack.top - 1 > index && hasImpliedEndTag(this.fElementStack.peek().prop.code)) {
-			this.callEndElement(this.fElementStack.pop());
+			final Info info = this.fElementStack.pop();
+			this.callEndElement(info.qname, null);
 		}
 		if (this.fElementStack.top - 1 == index) {
-			this.callEndElement(this.fElementStack.pop());
+			final Info info = this.fElementStack.pop();
+			this.callEndElement(info.qname, null);
 		} else {
 			node.removed = true;
 		}
@@ -1202,7 +1059,8 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 	 */
 	private void closeRemovedForms() {
 		while (this.fElementStack.top > 0 && this.fElementStack.peek().removed) {
-			this.callEndElement(this.fElementStack.pop());
+			final Info info = this.fElementStack.pop();
+			this.callEndElement(info.qname, null);
 		}
 	}
 
@@ -1213,7 +1071,7 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 			if (code == HTMLElements.P) {
 				while (this.fElementStack.top > i) {
 					final Info info = this.fElementStack.pop();
-					this.callEndElement(info);
+					this.callEndElement(info.qname, null);
 				}
 				return;
 			}
@@ -1354,21 +1212,6 @@ public class TagBalancer implements XMLDocumentFilter, HTMLComponent {
 		}
 		return NAMES_NO_CHANGE;
 	} // getNamesValue(String):short
-
-	/**
-	 * Only ASCII white space stays in a table: the HTML Standard takes text with anything else out of it, also a
-	 * no-break or an ideographic space.
-	 */
-	private static boolean isAsciiWhitespace(final XMLString text) {
-		for (int i = 0; i < text.length(); i++) {
-			final char c = text.charAt(i);
-			// tab, line feed, form feed, carriage return, space
-			if (c != 0x09 && c != 0x0A && c != 0x0C && c != 0x0D && c != 0x20) {
-				return false;
-			}
-		}
-		return true;
-	}
 
 	protected static boolean isWhitespace(final XMLString text) {
 		for (int i = 0; i < text.length(); i++) {
